@@ -210,7 +210,7 @@ export async function validateDocuments(cvText: string, jdText: string): Promise
       }
     });
 
-    const response = await withTimeout(apiCall, 30000); // 30 second timeout
+    const response = await withTimeout(apiCall, 60000); // 30 second timeout
     const jsonText = response.text.trim();
     const result = JSON.parse(jsonText);
     return result as ValidationResult;
@@ -257,7 +257,7 @@ export async function analyzeCv(cvText: string, jdText: string): Promise<Analysi
       }
     });
 
-    const response = await withTimeout(apiCall, 45000); // 45 second timeout for analysis
+    const response = await withTimeout(apiCall, 60000); // 45 second timeout for analysis
     const jsonText = response.text.trim();
     const result = JSON.parse(jsonText);
     return result as AnalysisResult;
@@ -303,7 +303,7 @@ export async function structureJd(jdText: string): Promise<StructuredJd> {
             }
         });
         
-        const response = await withTimeout(apiCall, 30000); // 30 second timeout
+        const response = await withTimeout(apiCall, 60000); // 30 second timeout
         const jsonText = response.text.trim();
         return JSON.parse(jsonText) as StructuredJd;
     } catch (error) {
