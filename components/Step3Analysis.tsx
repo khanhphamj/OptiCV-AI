@@ -71,10 +71,10 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
         {isAnalyzing && <SimpleLoader />}
         
         {/* Mobile-First Responsive Layout */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-2 lg:gap-8">
           {/* Scores Section - Full width on mobile, left column on desktop */}
           <div className="lg:col-span-5 space-y-4 lg:space-y-8">
-              <div className="bg-white rounded-xl lg:rounded-2xl p-4 lg:p-6 shadow-xl shadow-emerald-500/10 border border-gray-200/30">
+              <div className="bg-white rounded-xl lg:rounded-2xl p-3 lg:p-6 shadow-xl shadow-emerald-500/10 border border-gray-200/30">
                    <AnalysisPanel
                       score={result.suitability_score}
                       previousScore={previousScore}
@@ -87,7 +87,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
           </div>
           
           {/* CV Coach Section - Full width on mobile, right column on desktop */}
-          <div className="lg:col-span-7 relative min-h-[75vh] lg:h-[85vh] lg:h-auto">
+          <div className="lg:col-span-7 relative min-h-[90vh] lg:h-[85vh] lg:h-auto">
             <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}
