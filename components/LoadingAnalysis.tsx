@@ -1,8 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { useTypingEffect } from '../hooks/useTypingEffect';
-
-// Lottie is loaded from the CDN script in index.html
-declare const lottie: any;
+import LottieAnimation from './LottieAnimation';
 
 interface LoadingAnalysisProps {
   stage: 'validation' | 'analysis' | 'complete';
@@ -32,7 +30,6 @@ const ANALYSIS_STEPS = [
 const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onComplete }) => {
   const steps = stage === 'validation' ? VALIDATION_STEPS : ANALYSIS_STEPS;
   const displayedStep = useTypingEffect(steps, { typingSpeed: 40, pauseDuration: 2000 });
-  const animationContainer = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   
   const animationClass = stage === 'complete' 
@@ -40,42 +37,6 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
     : 'animate__animated animate__zoomIn animate__fast';
 
   const title = stage === 'validation' ? 'Validating Documents' : 'Analyzing Documents';
-  
-  useEffect(() => {
-    if (animationContainer.current && typeof lottie !== 'undefined') {
-      let anim: any;
-      
-      fetch('animations/analyzing.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch Lottie animation: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then(animationData => {
-          if (animationContainer.current) {
-            // Clear previous animation if any
-            animationContainer.current.innerHTML = '';
-            anim = lottie.loadAnimation({
-              container: animationContainer.current,
-              renderer: 'svg',
-              loop: true,
-              autoplay: true,
-              animationData: animationData,
-            });
-          }
-        })
-        .catch(error => {
-            console.error("Error loading Lottie animation:", error);
-        });
-
-      return () => {
-        if (anim) {
-          anim.destroy();
-        }
-      };
-    }
-  }, []);
   
   useEffect(() => {
     const node = mainContainerRef.current;
@@ -103,9 +64,12 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
           {stage === 'complete' ? 'Analysis Complete' : title}
         </h3>
 
-        <div ref={animationContainer} className="w-56 h-56 sm:w-64 sm:h-64 mx-auto -my-8 sm:-my-10">
-            {/* Lottie animation will be loaded here, it will fill this div */}
-        </div>
+        <LottieAnimation
+          animationPath="/animations/analyzing.json"
+          className="w-56 h-56 sm:w-64 sm:h-64 mx-auto -my-8 sm:-my-10"
+          loop={true}
+          autoplay={true}
+        />
 
         <div className="h-12 flex items-center justify-center px-4">
           <p className="text-base text-gray-600 font-mono transition-opacity duration-300">
