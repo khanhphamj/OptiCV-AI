@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HiDocumentText } from 'react-icons/hi2/';
+import { HiDocumentText } from 'react-icons/hi2';
 import { PdfFileIcon } from './icons/PdfFileIcon';
 import { WordFileIcon } from './icons/WordFileIcon';
 

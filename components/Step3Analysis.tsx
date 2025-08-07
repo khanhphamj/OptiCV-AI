@@ -5,7 +5,7 @@ import { AnalysisResult, AISuggestion, StructuredJd, ImprovementLog, AnalysisSes
 import AnalysisPanel from './AnalysisPanel';
 import SubScoreBars from './SubScoreBars';
 import CVCoachPanel from './CVCoachPanel';
-import { HiSparkles, HiArrowPath } from 'react-icons/hi2/';
+import { HiSparkles, HiArrowPath } from 'react-icons/hi2';
 
 interface Step3AnalysisProps {
   result: AnalysisResult | null;

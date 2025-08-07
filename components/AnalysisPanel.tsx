@@ -1,5 +1,5 @@
 import React from 'react';
-import { HiSparkles, HiArrowLongRight, HiArrowTrendingUp, HiArrowTrendingDown } from 'react-icons/hi2/';
+import { HiSparkles, HiArrowLongRight, HiArrowTrendingUp, HiArrowTrendingDown } from 'react-icons/hi2';
 
 interface AnalysisPanelProps {
   score: number;          // 0 – 100

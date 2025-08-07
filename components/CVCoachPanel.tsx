@@ -7,7 +7,7 @@ import { startCoachChat } from '../services/geminiService';
 import SuggestionCard from './SuggestionCard';
 import CourseSuggestionCard from './CourseSuggestionCard';
 import CoachProgressTracker from './CoachProgressTracker';
-import { HiSparkles, HiPaperAirplane, HiArrowPath, HiArrowUturnLeft, HiDocumentArrowDown, HiCheck, HiOutlineClipboardDocumentList, HiPencil } from 'react-icons/hi2/';
+import { HiSparkles, HiPaperAirplane, HiArrowPath, HiArrowUturnLeft, HiDocumentArrowDown, HiCheck, HiOutlineClipboardDocumentList, HiPencil } from 'react-icons/hi2';
 import LottieAnimation from './LottieAnimation';
 
 declare const showdown: any;

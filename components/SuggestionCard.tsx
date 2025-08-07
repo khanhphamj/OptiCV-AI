@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AISuggestion } from '../types';
-import { HiCheck, HiXMark } from 'react-icons/hi2/';
+import { HiCheck, HiXMark } from 'react-icons/hi2';
 
 
 interface SuggestionCardProps {

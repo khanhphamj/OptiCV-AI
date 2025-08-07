@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { extractText } from '../services/fileParser';
-import { HiArrowPath, HiCloudArrowUp } from 'react-icons/hi2/';
+import { HiArrowPath, HiCloudArrowUp } from 'react-icons/hi2';
 
 interface FileUploadProps {
   onUploadSuccess: (text: string, fileName: string, fileSize: number) => void;

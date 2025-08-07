@@ -1,6 +1,6 @@
 import React from 'react';
 import { SubScores } from '../types';
-import { HiStar, HiKey, HiBriefcase, HiWrenchScrewdriver, HiChartBar } from 'react-icons/hi2/';
+import { HiStar, HiKey, HiBriefcase, HiWrenchScrewdriver, HiChartBar } from 'react-icons/hi2';
 
 interface SubScoreBarsProps {
     subScores: SubScores;

@@ -1,6 +1,6 @@
 import React from 'react';
 import FileTypeIcon from './FileTypeIcon';
-import { HiXCircle, HiCheckCircle } from 'react-icons/hi2/';
+import { HiXCircle, HiCheckCircle } from 'react-icons/hi2';
 
 interface FileStatusDisplayProps {
   fileName: string;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Course, CourseRecommendation } from '../types';
-import { HiBookOpen, HiArrowTopRightOnSquare } from 'react-icons/hi2/';
+import { HiBookOpen, HiArrowTopRightOnSquare } from 'react-icons/hi2';
 
 interface CourseSuggestionCardProps {
   recommendation: CourseRecommendation;

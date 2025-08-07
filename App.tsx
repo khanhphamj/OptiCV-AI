@@ -10,7 +10,7 @@ import Step3Analysis from './components/Step3Analysis';
 import { analyzeCv, validateDocuments, structureJd } from './services/geminiService';
 import LoadingAnalysis from './components/LoadingAnalysis';
 import Footer from './components/Footer';
-import { HiExclamationTriangle, HiChevronLeft } from 'react-icons/hi2/';
+import { HiExclamationTriangle, HiChevronLeft } from 'react-icons/hi2';
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState<Step>(Step.UploadCV);

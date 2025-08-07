@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import FileUpload from './FileUpload';
 import FileStatusDisplay from './FileStatusDisplay';
-import { HiChevronRight } from 'react-icons/hi2/';
+import { HiChevronRight } from 'react-icons/hi2';
 
 interface Step1UploadCVProps {
   onUploadSuccess: (text: string, fileName: string) => void;

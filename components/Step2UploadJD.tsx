@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import FileUpload from './FileUpload';
-import { HiCheck, HiChevronLeft, HiSparkles, HiPencil, HiDocumentArrowUp } from 'react-icons/hi2/';
+import { HiCheck, HiChevronLeft, HiSparkles, HiPencil, HiDocumentArrowUp } from 'react-icons/hi2';
 import FileStatusDisplay from './FileStatusDisplay';
 import LottieAnimation from './LottieAnimation';
 

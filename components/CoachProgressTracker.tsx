@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AnalysisSession } from '../types';
-import { HiCheckCircle, HiChevronDown, HiClock, HiArrowTrendingUp, HiArrowTrendingDown, HiPencilSquare } from 'react-icons/hi2/';
+import { HiCheckCircle, HiChevronDown, HiClock, HiArrowTrendingUp, HiArrowTrendingDown, HiPencilSquare } from 'react-icons/hi2';
 
 interface CoachProgressTrackerProps {
   sessions: AnalysisSession[];

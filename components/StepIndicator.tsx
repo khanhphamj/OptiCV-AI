@@ -1,6 +1,6 @@
 import React from 'react';
 import { StepConfig, Step } from '../types';
-import { HiCheck } from 'react-icons/hi2/';
+import { HiCheck } from 'react-icons/hi2';
 
 interface StepIndicatorProps {
   steps: StepConfig[];

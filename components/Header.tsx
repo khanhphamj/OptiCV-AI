@@ -1,5 +1,5 @@
 import React from 'react';
-import { HiSparkles } from 'react-icons/hi2/';
+import { HiSparkles } from 'react-icons/hi2';
 import LottieAnimation from './LottieAnimation';
 
 const Header: React.FC = () => {
