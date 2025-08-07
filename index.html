@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered CV Optimizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&family=Space+Grotesk:wght@700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.1/",
+    "react": "https://esm.sh/react@^19.1.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+    "react-icons/fa/": "https://esm.sh/react-icons/fa/",
+    "react-icons/hi2/": "https://esm.sh/react-icons/hi2/",
+    "react-icons/bs/": "https://esm.sh/react-icons/bs/",
+    "react-icons/": "https://esm.sh/react-icons@^5.5.0/"
+  }
+}
+</script>
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .font-headline {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .font-numeric {
+    font-family: 'Space Grotesk', monospace;
+  }
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  /* Custom styles for structured Markdown preview */
+  .prose {
+    max-width: 100%;
+  }
+  .prose h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.5rem; /* 24px */
+    font-weight: 800;
+    color: #1e293b; /* slate-800 */
+    border-bottom: 1px solid #e2e8f0; /* slate-200 */
+    padding-bottom: 0.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .prose h2:first-child {
+    margin-top: 0;
+  }
+  .prose h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.25rem; /* 20px */
+    font-weight: 700;
+    color: #334155; /* slate-700 */
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .prose p, .prose li {
+    font-size: 1rem; /* 16px */
+    line-height: 1.75;
+    color: #475569; /* slate-600 */
+  }
+  .prose p {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+  }
+  .prose ul, .prose ol {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding-left: 1.5em;
+  }
+  .prose li {
+      margin-top: 0.5em;
+  }
+  .prose li > ul, .prose li > ol {
+      margin-top: 0.5em;
+  }
+  .prose a {
+    color: #059669; /* emerald-600 */
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .prose a:hover {
+    color: #047857; /* emerald-700 */
+    text-decoration: underline;
+  }
+  .prose strong {
+    color: #334155; /* slate-700 */
+    font-weight: 600;
+  }
+  .prose blockquote {
+    font-style: italic;
+    color: #475569; /* slate-600 */
+    border-left: 0.25rem solid #cbd5e1; /* slate-300 */
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+  }
+</style>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-100 text-gray-800">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

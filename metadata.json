@@ -1,0 +1,6 @@
+{
+  "name": "AI-Powered CV Optimizer",
+  "description": "A 3-step wizard to upload, analyze, and optimize your CV against a job description using AI. Get instant feedback, a match score, and edit your CV in real-time to improve your chances of landing an interview.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

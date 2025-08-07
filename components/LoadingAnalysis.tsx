@@ -1,0 +1,129 @@
+import React, { useRef, useEffect } from 'react';
+import { useTypingEffect } from '../hooks/useTypingEffect';
+
+// Lottie is loaded from the CDN script in index.html
+declare const lottie: any;
+
+interface LoadingAnalysisProps {
+  stage: 'validation' | 'analysis' | 'complete';
+  onCancel: () => void;
+  onComplete: () => void;
+}
+
+const VALIDATION_STEPS = [
+  "Initializing validation agent...",
+  "Confirming CV document integrity...",
+  "Scanning Job Description for relevance...",
+  "Checking for potential content issues...",
+  "Validation complete. Proceeding to analysis.",
+];
+
+const ANALYSIS_STEPS = [
+  "Parsing CV for key skills and experience...",
+  "Initializing Gemini analysis agent...",
+  "Cross-referencing with Job Description requirements...",
+  "Evaluating experience fit and skill coverage...",
+  "Identifying keywords and quantifiable achievements...",
+  "Compiling strengths and improvement areas...",
+  "Calculating final suitability score...",
+  "Finalizing analysis report.",
+];
+
+const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onComplete }) => {
+  const steps = stage === 'validation' ? VALIDATION_STEPS : ANALYSIS_STEPS;
+  const displayedStep = useTypingEffect(steps, { typingSpeed: 40, pauseDuration: 2000 });
+  const animationContainer = useRef<HTMLDivElement>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+  
+  const animationClass = stage === 'complete' 
+    ? 'animate__animated animate__zoomOut animate__fast'
+    : 'animate__animated animate__zoomIn animate__fast';
+
+  const title = stage === 'validation' ? 'Validating Documents' : 'Analyzing Documents';
+  
+  useEffect(() => {
+    if (animationContainer.current && typeof lottie !== 'undefined') {
+      let anim: any;
+      
+      fetch('animations/analyzing.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch Lottie animation: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(animationData => {
+          if (animationContainer.current) {
+            // Clear previous animation if any
+            animationContainer.current.innerHTML = '';
+            anim = lottie.loadAnimation({
+              container: animationContainer.current,
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              animationData: animationData,
+            });
+          }
+        })
+        .catch(error => {
+            console.error("Error loading Lottie animation:", error);
+        });
+
+      return () => {
+        if (anim) {
+          anim.destroy();
+        }
+      };
+    }
+  }, []);
+  
+  useEffect(() => {
+    const node = mainContainerRef.current;
+    if (stage === 'complete' && node) {
+        const handleAnimationEnd = (event: AnimationEvent) => {
+            if (event.animationName === 'zoomOut') {
+                onComplete();
+            }
+        };
+        node.addEventListener('animationend', handleAnimationEnd);
+        return () => {
+            node.removeEventListener('animationend', handleAnimationEnd);
+        };
+    }
+  }, [stage, onComplete]);
+
+
+  return (
+    <div 
+      ref={mainContainerRef}
+      className={`flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl w-full max-w-md mx-auto bg-white border border-slate-200/50 shadow-2xl ${animationClass}`}
+    >
+      <div className="text-center w-full flex flex-col items-center">
+        <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 font-headline">
+          {stage === 'complete' ? 'Analysis Complete' : title}
+        </h3>
+
+        <div ref={animationContainer} className="w-56 h-56 sm:w-64 sm:h-64 mx-auto -my-8 sm:-my-10">
+            {/* Lottie animation will be loaded here, it will fill this div */}
+        </div>
+
+        <div className="h-12 flex items-center justify-center px-4">
+          <p className="text-base text-gray-600 font-mono transition-opacity duration-300">
+            {stage === 'complete' ? 'Presenting your results...' : displayedStep}
+            {stage !== 'complete' && <span className="animate-pulse">_</span>}
+          </p>
+        </div>
+
+        <button
+          onClick={onCancel}
+          disabled={stage === 'complete'}
+          className="mt-4 px-8 py-3 bg-white text-slate-800 font-semibold rounded-xl hover:bg-slate-100 transition-colors border border-slate-300/80 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default LoadingAnalysis;
