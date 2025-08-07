@@ -108,6 +108,7 @@ export default function App() {
   }, []);
   
   const runActualAnalysis = useCallback(async (cv: string, jd: string) => {
+    console.log('🚀 Starting analysis...', { cvLength: cv.length, jdLength: jd.length });
     setError(null);
     setValidationWarning(null);
     // Ensure we are on the Analysis step, but don't animate if already there.
@@ -117,10 +118,20 @@ export default function App() {
     setLoadingStage('analysis');
 
     try {
+      console.log('📊 Calling Gemini APIs...');
+      const startTime = Date.now();
+      
       const [analysis, structured] = await Promise.all([
         analyzeCv(cv, jd),
         structureJd(jd)
       ]);
+      
+      const endTime = Date.now();
+      console.log(`✅ Analysis completed in ${endTime - startTime}ms`, { 
+        score: analysis.suitability_score,
+        structured: !!structured 
+      });
+      
       setAnalysisResult(analysis);
       setStructuredJd(structured);
 
@@ -138,7 +149,7 @@ export default function App() {
 
       setLoadingStage('complete');
     } catch (e) {
-      console.error(e);
+      console.error('❌ Analysis failed:', e);
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred during analysis.';
       setError(`Failed to analyze documents. ${errorMessage}`);
       changeStep(Step.UploadJD);

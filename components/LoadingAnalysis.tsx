@@ -29,7 +29,7 @@ const ANALYSIS_STEPS = [
 
 const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onComplete }) => {
   const steps = stage === 'validation' ? VALIDATION_STEPS : ANALYSIS_STEPS;
-  const displayedStep = useTypingEffect(steps, { typingSpeed: 40, pauseDuration: 2000 });
+  const displayedStep = useTypingEffect(steps, { typingSpeed: 25, pauseDuration: 800 });
   const mainContainerRef = useRef<HTMLDivElement>(null);
   
   const animationClass = stage === 'complete' 
@@ -71,11 +71,18 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
           autoplay={true}
         />
 
-        <div className="h-12 flex items-center justify-center px-4">
+        <div className="h-16 flex flex-col items-center justify-center px-4 space-y-2">
           <p className="text-base text-gray-600 font-mono transition-opacity duration-300">
             {stage === 'complete' ? 'Presenting your results...' : displayedStep}
             {stage !== 'complete' && <span className="animate-pulse">_</span>}
           </p>
+          
+          {stage !== 'complete' && (
+            <div className="w-full max-w-xs bg-gray-200 rounded-full h-1.5">
+              <div className="bg-emerald-500 h-1.5 rounded-full transition-all duration-1000 ease-out animate-pulse" 
+                   style={{width: stage === 'validation' ? '30%' : '70%'}}></div>
+            </div>
+          )}
         </div>
 
         <button

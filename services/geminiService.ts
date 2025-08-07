@@ -5,9 +5,9 @@ import { AnalysisResult, ValidationResult, StructuredJd } from '../types';
 import { CV_ANALYSIS_MODEL } from '../constants';
 
 // Ensure you have your API key set as an environment variable
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.GEMINI_API_KEY || process.env.API_KEY;
 if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set.");
+  throw new Error("GEMINI_API_KEY environment variable not set.");
 }
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
@@ -167,6 +167,16 @@ const structuredJdSchema = {
     required: ["job_title", "company_name", "location", "work_type", "salary", "experience_required", "education_required", "job_summary", "key_responsibilities", "requirements", "benefits", "application_info", "required_documents", "company_summary", "why_choose_us"]
 };
 
+// Timeout wrapper for API calls
+const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => 
+      setTimeout(() => reject(new Error(`Request timeout after ${ms}ms`)), ms)
+    )
+  ]);
+};
+
 export async function validateDocuments(cvText: string, jdText: string): Promise<ValidationResult> {
   const systemInstruction = `You are a document validation expert. Your task is to determine if the two provided texts correspond to a CV and a Job Description (JD).
   - The first text should be a CV/resume.
@@ -189,7 +199,7 @@ export async function validateDocuments(cvText: string, jdText: string): Promise
   `;
   
   try {
-    const response = await ai.models.generateContent({
+    const apiCall = ai.models.generateContent({
       model: CV_ANALYSIS_MODEL,
       contents: prompt,
       config: {
@@ -200,6 +210,7 @@ export async function validateDocuments(cvText: string, jdText: string): Promise
       }
     });
 
+    const response = await withTimeout(apiCall, 30000); // 30 second timeout
     const jsonText = response.text.trim();
     const result = JSON.parse(jsonText);
     return result as ValidationResult;
@@ -235,7 +246,7 @@ export async function analyzeCv(cvText: string, jdText: string): Promise<Analysi
   `;
   
   try {
-    const response = await ai.models.generateContent({
+    const apiCall = ai.models.generateContent({
       model: CV_ANALYSIS_MODEL,
       contents: prompt,
       config: {
@@ -246,6 +257,7 @@ export async function analyzeCv(cvText: string, jdText: string): Promise<Analysi
       }
     });
 
+    const response = await withTimeout(apiCall, 45000); // 45 second timeout for analysis
     const jsonText = response.text.trim();
     const result = JSON.parse(jsonText);
     return result as AnalysisResult;
@@ -280,7 +292,7 @@ export async function structureJd(jdText: string): Promise<StructuredJd> {
     `;
 
     try {
-        const response = await ai.models.generateContent({
+        const apiCall = ai.models.generateContent({
             model: CV_ANALYSIS_MODEL,
             contents: prompt,
             config: {
@@ -290,6 +302,8 @@ export async function structureJd(jdText: string): Promise<StructuredJd> {
                 temperature: 0.1,
             }
         });
+        
+        const response = await withTimeout(apiCall, 30000); // 30 second timeout
         const jsonText = response.text.trim();
         return JSON.parse(jsonText) as StructuredJd;
     } catch (error) {
