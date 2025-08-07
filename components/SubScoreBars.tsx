@@ -31,13 +31,13 @@ const SubScoreItem: React.FC<{ metric: MetricConfig; score: number }> = ({ metri
     
     return (
         <div>
-            <div className="flex justify-between items-center mb-1 text-sm">
-                <div className="flex items-center gap-2 font-medium text-gray-700">
-                    <metric.icon className="w-5 h-5 text-gray-500" />
-                    <span>{metric.label}</span>
+            <div className="flex justify-between items-center mb-1 text-xs sm:text-sm">
+                <div className="flex items-center gap-1.5 sm:gap-2 font-medium text-gray-700">
+                    <metric.icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                    <span className="text-xs sm:text-sm">{metric.label}</span>
                 </div>
                 <div className={`font-numeric flex items-center gap-1 font-bold ${text}`}>
-                    <span>{score}%</span>
+                    <span className="text-sm sm:text-base">{score}%</span>
                     {isHighScorer && <HiStar className="w-4 h-4 text-amber-500" />}
                 </div>
             </div>
@@ -53,8 +53,8 @@ const SubScoreItem: React.FC<{ metric: MetricConfig; score: number }> = ({ metri
 
 const SubScoreBars: React.FC<SubScoreBarsProps> = ({ subScores }) => {
     return (
-        <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200/30 space-y-6">
-             <h3 className="text-xl font-bold text-gray-800 font-headline">Detailed Analysis</h3>
+        <div className="bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-lg border border-slate-200/30 space-y-4 lg:space-y-6">
+             <h3 className="text-lg lg:text-xl font-bold text-gray-800 font-headline">Detailed Analysis</h3>
             {METRICS_CONFIG.map(metric => {
                 const data = subScores[metric.id];
                 if (!data) return null;

@@ -70,23 +70,24 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
       <div className="relative">
         {isAnalyzing && <SimpleLoader />}
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Scores */}
-          <div className="lg:col-span-5 space-y-8">
-              <div className="bg-white rounded-2xl p-6 shadow-xl shadow-emerald-500/10 border border-gray-200/30">
+        {/* Mobile-First Responsive Layout */}
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-8">
+          {/* Scores Section - Full width on mobile, left column on desktop */}
+          <div className="lg:col-span-5 space-y-4 lg:space-y-8">
+              <div className="bg-white rounded-xl lg:rounded-2xl p-4 lg:p-6 shadow-xl shadow-emerald-500/10 border border-gray-200/30">
                    <AnalysisPanel
                       score={result.suitability_score}
                       previousScore={previousScore}
                       summary={result.overall_summary}
                   />
               </div>
-               <div className="bg-white rounded-2xl p-6 shadow-lg shadow-gray-500/5 border border-gray-200/30">
+               <div className="bg-white rounded-xl lg:rounded-2xl p-4 lg:p-6 shadow-lg shadow-gray-500/5 border border-gray-200/30">
                   <SubScoreBars subScores={result.sub_scores} />
               </div>
           </div>
           
-          {/* Right Column: CV Coach */}
-          <div className="lg:col-span-7 relative h-[85vh] lg:h-auto">
+          {/* CV Coach Section - Full width on mobile, right column on desktop */}
+          <div className="lg:col-span-7 relative min-h-[60vh] lg:h-[85vh] lg:h-auto">
             <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}

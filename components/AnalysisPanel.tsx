@@ -34,7 +34,7 @@ const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
     const offset = CIRCUMFERENCE - (score / 100) * CIRCUMFERENCE;
 
     return (
-        <div className="relative w-40 h-40 sm:w-48 sm:h-48 mx-auto">
+        <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 mx-auto">
             <svg viewBox="0 0 44 44" className="w-full h-full -rotate-90">
                 <circle cx="22" cy="22" r="20" fill="none" strokeWidth="3" className="stroke-slate-200" />
                 <circle
@@ -50,10 +50,10 @@ const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
                 />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className={`font-numeric text-5xl sm:text-6xl font-bold ${text}`}>
+                <span className={`font-numeric text-3xl sm:text-5xl lg:text-6xl font-bold ${text}`}>
                     {score}
                 </span>
-                <span className="text-sm font-medium text-gray-500 -mt-1">/ 100</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-500 -mt-1">/ 100</span>
             </div>
         </div>
     );
@@ -107,21 +107,21 @@ const ModernImprovementBadge: React.FC<{ current: number; previous: number | nul
    Main Analysis Panel
 --------------------------------------------*/
 const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ score, previousScore, summary }) => (
-  <div className="flex flex-col items-center text-center p-6 bg-white rounded-3xl shadow-lg border border-slate-200/30">
+  <div className="flex flex-col items-center text-center p-4 lg:p-6 bg-white rounded-2xl lg:rounded-3xl shadow-lg border border-slate-200/30">
     <ScoreCircle score={score} />
 
-    <h3 tabIndex={0} className="font-headline mt-6 text-2xl font-bold bg-gradient-to-br from-gray-800 to-gray-600 bg-clip-text text-transparent">
+    <h3 tabIndex={0} className="font-headline mt-4 lg:mt-6 text-xl lg:text-2xl font-bold bg-gradient-to-br from-gray-800 to-gray-600 bg-clip-text text-transparent">
       Overall Match Score
     </h3>
 
-    <div className="mt-4 space-y-3">
+    <div className="mt-3 lg:mt-4 space-y-2 lg:space-y-3">
         <ScoreStatus score={score} />
-        <p className="text-base text-gray-700/90 leading-relaxed max-w-md">
+        <p className="text-sm lg:text-base text-gray-700/90 leading-relaxed max-w-sm lg:max-w-md px-2 lg:px-0">
          {summary}
         </p>
     </div>
 
-    <ModernImprovementBadge current={score} previous={previousScore} className="mt-6" />
+    <ModernImprovementBadge current={score} previous={previousScore} className="mt-4 lg:mt-6" />
   </div>
 );
 
