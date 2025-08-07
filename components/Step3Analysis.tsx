@@ -87,7 +87,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
           </div>
           
           {/* CV Coach Section - Full width on mobile, right column on desktop */}
-          <div className="lg:col-span-7 relative min-h-[90vh] lg:h-[85vh] lg:h-auto">
+          <div className="lg:col-span-7 relative min-h-[95vh] lg:h-[85vh] lg:h-auto">
             <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}
