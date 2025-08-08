@@ -299,7 +299,7 @@ export default function App() {
     <div className="min-h-screen font-sans flex flex-col bg-slate-100">
       <Header />
       
-      <div className="relative z-20 -mt-16">
+      <div id="step-indicator" className="relative z-20 -mt-16">
         <div className="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <StepIndicator steps={STEPS} currentStep={currentStep} />
         </div>

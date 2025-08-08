@@ -97,7 +97,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
     return () => window.removeEventListener('resize', applyEqualHeights);
   }, [result, analysisSessions, structuredJd]);
 
-  // Robust auto-scroll to align Step 3, avoiding overshoot/bottom sticking and keeping footer off-screen
+  // Robust auto-scroll to align Step 3
   useEffect(() => {
     if (!leftRef.current) return;
     const offset = 160; // adjust 120–200 to taste (distance from top)
@@ -123,7 +123,18 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
         bottomClamp = Math.min(bottomClamp, Math.max(0, maxBeforeFooter));
       }
       const desired = rect.top + scrollTop - offset;
-      const target = Math.min(Math.max(desired, 0), bottomClamp);
+      let target = Math.min(Math.max(desired, 0), bottomClamp);
+
+      // On small screens, prefer snapping just below the step indicator
+      if (window.innerWidth < 1024) {
+        const step = document.getElementById('step-indicator');
+        if (step) {
+          const stepRect = step.getBoundingClientRect();
+          const stepBottom = (window.pageYOffset || 0) + stepRect.bottom;
+          const mobileOffset = 12; // small gap below step-by-step bar
+          target = Math.max(target, stepBottom + mobileOffset);
+        }
+      }
       window.scrollTo({ top: target, behavior: 'smooth' });
     };
     // double rAF to wait for layout to settle
