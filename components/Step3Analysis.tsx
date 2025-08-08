@@ -1,6 +1,6 @@
 
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AnalysisResult, AISuggestion, StructuredJd, ImprovementLog, AnalysisSession } from '../types';
 import AnalysisPanel from './AnalysisPanel';
 import SubScoreBars from './SubScoreBars';
@@ -81,6 +81,22 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
 
   const previousScore = analysisSessions.length > 0 ? analysisSessions[analysisSessions.length - 1].scoreBefore : null;
 
+  const leftRef = useRef<HTMLDivElement | null>(null);
+  const rightRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const applyEqualHeights = () => {
+      if (!leftRef.current || !rightRef.current) return;
+      const leftHeight = leftRef.current.getBoundingClientRect().height;
+      rightRef.current.style.height = `${leftHeight}px`;
+      rightRef.current.style.maxHeight = `${leftHeight}px`;
+    };
+
+    applyEqualHeights();
+    window.addEventListener('resize', applyEqualHeights);
+    return () => window.removeEventListener('resize', applyEqualHeights);
+  }, [result, analysisSessions, structuredJd]);
+
   return (
     <div className="animate__animated animate__fadeInUp animate__fast">
       <div className="relative">
@@ -89,7 +105,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
         {/* Wide Responsive Layout */}
         <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-1 lg:items-stretch gap-4 lg:gap-6">
           {/* Scores Section - Wider layout */}
-          <div className="lg:col-span-4 flex flex-col space-y-4">
+          <div ref={leftRef} className="lg:col-span-4 flex flex-col space-y-4">
             {/* Main Score Card - Compact for wider layout */}
             <div className="bg-gradient-to-br from-white via-white to-emerald-50/30 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-2xl shadow-emerald-500/10 border border-emerald-100/50">
               <AnalysisPanel
@@ -105,9 +121,9 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
             </div>
           </div>
           
-          {/* CV Coach Section - Match height with left column (grid stretch) */}
+          {/* CV Coach Section - Match height with left column and scroll inside */}
           <div className="lg:col-span-8 flex">
-            <div className="w-full h-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
+            <div ref={rightRef} className="w-full h-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
               <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}
