@@ -493,6 +493,7 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
                                 ? 'bg-white text-gray-800 rounded-es-none border border-slate-200/80' 
                                 : 'bg-emerald-600 text-white rounded-ee-none shadow-emerald-500/20'
                             }`}
+                            style={{ maxHeight: '16rem', overflowY: 'auto' }}
                         >
                             <p className="text-base font-normal whitespace-pre-wrap">{msg.content}</p>
                         </div>

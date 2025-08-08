@@ -105,9 +105,9 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
             </div>
           </div>
           
-          {/* CV Coach Section - Wider for better proportion */}
-          <div className="lg:col-span-8 relative lg:h-full">
-            <div className="h-full w-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
+          {/* CV Coach Section - Fixed height to force internal scrolling */}
+          <div className="lg:col-span-8 relative">
+            <div className="h-[600px] lg:h-[700px] xl:h-[750px] w-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
               <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}
