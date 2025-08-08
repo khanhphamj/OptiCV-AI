@@ -97,8 +97,41 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
     return () => window.removeEventListener('resize', applyEqualHeights);
   }, [result, analysisSessions, structuredJd]);
 
+  // Robust auto-scroll to align Step 3, avoiding overshoot/bottom sticking and keeping footer off-screen
+  useEffect(() => {
+    if (!leftRef.current) return;
+    const offset = 160; // adjust 120–200 to taste (distance from top)
+    const safeBottom = 140; // generic safety from absolute bottom (px)
+    const footerMargin = 24; // keep viewport bottom at least this far above footer top (px)
+    const doScroll = () => {
+      if (!leftRef.current) return;
+      const rect = leftRef.current.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const maxTop = Math.max(
+        0,
+        (document.documentElement.scrollHeight || document.body.scrollHeight) - window.innerHeight
+      );
+      // prevent clamping to absolute bottom so the focal area appears higher
+      let bottomClamp = Math.max(0, maxTop - safeBottom);
+
+      // additionally, if a footer exists, ensure viewport bottom stays above it
+      const footer = document.querySelector('footer');
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect();
+        const footerTopY = (window.pageYOffset || 0) + footerRect.top;
+        const maxBeforeFooter = footerTopY - window.innerHeight - footerMargin;
+        bottomClamp = Math.min(bottomClamp, Math.max(0, maxBeforeFooter));
+      }
+      const desired = rect.top + scrollTop - offset;
+      const target = Math.min(Math.max(desired, 0), bottomClamp);
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    };
+    // double rAF to wait for layout to settle
+    requestAnimationFrame(() => requestAnimationFrame(doScroll));
+  }, []);
+
   return (
-    <div className="animate__animated animate__fadeInUp animate__fast">
+    <div id="step3-section" className="animate__animated animate__fadeInUp animate__fast">
       <div className="relative">
         {isAnalyzing && <SimpleLoader />}
         
@@ -116,9 +149,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
             </div>
             
             {/* Sub Scores Card - Compact styling */}
-            <div className="bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-slate-500/5 border border-slate-200/50">
-              <SubScoreBars subScores={result.sub_scores} />
-            </div>
+            <SubScoreBars subScores={result.sub_scores} />
           </div>
           
           {/* CV Coach Section - Match height with left column and scroll inside */}
