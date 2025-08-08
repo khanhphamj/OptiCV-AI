@@ -52,12 +52,28 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
   }
   
   const SimpleLoader = () => (
-    <div className="absolute inset-0 bg-slate-200/50 backdrop-blur-sm flex flex-col items-center justify-center rounded-3xl z-20 transition-opacity duration-300 animate__animated animate__fadeIn">
-        <div className="flex items-center gap-3 bg-white/70 backdrop-blur-lg p-4 rounded-2xl shadow-lg border border-white/30">
-            <HiArrowPath className="h-6 w-6 text-emerald-600 animate-spin" />
+    <div className="absolute inset-0 bg-gradient-to-br from-slate-200/60 via-white/40 to-emerald-100/60 backdrop-blur-md flex flex-col items-center justify-center rounded-3xl z-20 transition-all duration-500 animate__animated animate__fadeIn">
+        <div className="group flex items-center gap-4 bg-gradient-to-br from-white/90 via-white/80 to-emerald-50/90 backdrop-blur-xl p-6 rounded-3xl shadow-2xl border border-white/50 hover:shadow-emerald-500/20 transition-all duration-500">
+            {/* Animated spinner with gradient */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
+              <HiArrowPath className="relative h-8 w-8 text-white animate-spin" style={{animationDuration: '1s'}} />
+            </div>
+            
             <div className="text-left">
-                <p className="font-bold text-lg text-emerald-800">Re-analyzing...</p>
-                <p className="text-sm text-emerald-700">Updating your score based on your edits.</p>
+                <p className="font-bold text-xl bg-gradient-to-r from-emerald-800 to-teal-700 bg-clip-text text-transparent">
+                  Re-analyzing...
+                </p>
+                <p className="text-sm text-emerald-700/80 mt-1">
+                  Updating your score with AI-powered insights
+                </p>
+                
+                {/* Loading dots animation */}
+                <div className="flex gap-1 mt-3">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                  <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                </div>
             </div>
         </div>
     </div>
@@ -70,25 +86,29 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
       <div className="relative">
         {isAnalyzing && <SimpleLoader />}
         
-        {/* Mobile-First Responsive Layout */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-2 lg:gap-8">
-          {/* Scores Section - Full width on mobile, left column on desktop */}
-          <div className="lg:col-span-5 space-y-4 lg:space-y-8">
-              <div className="bg-white rounded-xl lg:rounded-2xl p-3 lg:p-6 shadow-xl shadow-emerald-500/10 border border-gray-200/30">
-                   <AnalysisPanel
-                      score={result.suitability_score}
-                      previousScore={previousScore}
-                      summary={result.overall_summary}
-                  />
-              </div>
-               <div className="bg-white rounded-xl lg:rounded-2xl p-4 lg:p-6 shadow-lg shadow-gray-500/5 border border-gray-200/30">
-                  <SubScoreBars subScores={result.sub_scores} />
-              </div>
+        {/* Wide Responsive Layout */}
+        <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-1 gap-4 lg:gap-6 lg:h-fit">
+          {/* Scores Section - Wider layout */}
+          <div className="lg:col-span-4 flex flex-col space-y-4">
+            {/* Main Score Card - Compact for wider layout */}
+            <div className="bg-gradient-to-br from-white via-white to-emerald-50/30 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-2xl shadow-emerald-500/10 border border-emerald-100/50">
+              <AnalysisPanel
+                score={result.suitability_score}
+                previousScore={previousScore}
+                summary={result.summary}
+              />
+            </div>
+            
+            {/* Sub Scores Card - Compact styling */}
+            <div className="bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-slate-500/5 border border-slate-200/50">
+              <SubScoreBars subScores={result.sub_scores} />
+            </div>
           </div>
           
-          {/* CV Coach Section - Full width on mobile, right column on desktop */}
-          <div className="lg:col-span-7 relative min-h-[95vh] lg:h-[85vh] lg:h-auto">
-            <CVCoachPanel
+          {/* CV Coach Section - Wider for better proportion */}
+          <div className="lg:col-span-8 relative lg:h-full">
+            <div className="h-full w-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
+              <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}
                 structuredJd={structuredJd}
@@ -100,7 +120,8 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
                 isAnalyzing={isAnalyzing}
                 analysisSessions={analysisSessions}
                 onAddImprovementLog={onAddImprovementLog}
-            />
+              />
+            </div>
           </div>
         </div>
       </div>

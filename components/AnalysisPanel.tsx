@@ -106,23 +106,45 @@ const ModernImprovementBadge: React.FC<{ current: number; previous: number | nul
 /* -------------------------------------------
    Main Analysis Panel
 --------------------------------------------*/
-const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ score, previousScore, summary }) => (
-  <div className="flex flex-col items-center text-center p-4 lg:p-6 bg-white rounded-2xl lg:rounded-3xl shadow-lg border border-slate-200/30">
-    <ScoreCircle score={score} />
+const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ score, previousScore, summary }) => {
+  return (
+    <div className="flex flex-col items-center text-center space-y-2.5 lg:space-y-3">
+      <ScoreCircle score={score} />
 
-    <h3 tabIndex={0} className="font-headline mt-4 lg:mt-6 text-xl lg:text-2xl font-bold bg-gradient-to-br from-gray-800 to-gray-600 bg-clip-text text-transparent">
-      Overall Match Score
-    </h3>
+      <div className="space-y-3 w-full">
+        <h3 tabIndex={0} className="font-headline text-xl lg:text-2xl xl:text-3xl font-bold bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent tracking-tight">
+          Overall Match Score
+        </h3>
 
-    <div className="mt-3 lg:mt-4 space-y-2 lg:space-y-3">
-        <ScoreStatus score={score} />
-        <p className="text-sm lg:text-base text-gray-700/90 leading-relaxed max-w-sm lg:max-w-md px-2 lg:px-0">
-         {summary}
-        </p>
+        <div className="space-y-2.5">
+          <ScoreStatus score={score} />
+          <div className="max-w-2xl mx-auto bg-gradient-to-br from-slate-50 via-white to-slate-50/50 p-3 lg:p-4 rounded-2xl border border-slate-200/60 shadow-inner text-left">
+            <div className="flex items-start gap-2.5 mb-2">
+              <div className="p-2 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg shadow-md flex-shrink-0">
+                <HiSparkles className="w-4 h-4 text-white" />
+              </div>
+              <h4 className="font-semibold text-slate-800 text-base lg:text-lg m-0">AI Analysis Summary</h4>
+            </div>
+
+            <div className="relative pl-11">
+              <p className="text-gray-700 leading-relaxed text-sm lg:text-base m-0" title={summary}>
+                {summary}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <ModernImprovementBadge current={score} previous={previousScore} />
+        
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 text-sm font-medium text-emerald-700 rounded-full border border-emerald-200/50 shadow-sm">
+          <HiSparkles className="h-4 w-4" />
+          Powered by GPT-4.1-mini
+        </div>
+      </div>
     </div>
-
-    <ModernImprovementBadge current={score} previous={previousScore} className="mt-4 lg:mt-6" />
-  </div>
-);
+  );
+};
 
 export default AnalysisPanel;

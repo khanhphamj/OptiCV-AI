@@ -7,7 +7,7 @@ import StepIndicator from './components/StepIndicator';
 import Step1UploadCV from './components/Step1UploadCV';
 import Step2UploadJD from './components/Step2UploadJD';
 import Step3Analysis from './components/Step3Analysis';
-import { analyzeCv, validateDocuments, structureJd } from './services/geminiService';
+import { analyzeCv, validateDocuments, structureJd } from './services/openAIService';
 import LoadingAnalysis from './components/LoadingAnalysis';
 import Footer from './components/Footer';
 import { HiExclamationTriangle, HiChevronLeft } from 'react-icons/hi2';
@@ -306,7 +306,7 @@ export default function App() {
       </div>
 
       <main className="flex-grow p-4 sm:p-6 lg:p-8 w-full">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1450px] mx-auto">
           {error && (
             <div className="max-w-3xl mx-auto bg-red-100 backdrop-blur-lg border border-red-500/20 text-red-900 px-4 py-3 rounded-xl mb-6 text-sm text-center shadow-lg animate__animated animate__shakeX">
               <strong>Error:</strong> {error}

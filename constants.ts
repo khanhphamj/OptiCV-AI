@@ -7,4 +7,4 @@ export const STEPS: StepConfig[] = [
   { id: Step.Analysis, name: 'Analysis & Optimization' },
 ];
 
-export const CV_ANALYSIS_MODEL = 'gemini-2.5-flash';
+export const CV_ANALYSIS_MODEL = 'gpt-4.1-mini-2025-04-14';

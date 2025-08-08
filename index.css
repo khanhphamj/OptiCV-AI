@@ -1,0 +1,156 @@
+/* Global styles for the AI-Powered CV Optimizer */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Professional scrollbar for chat */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-slate-300::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 6px;
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.hover\:scrollbar-thumb-slate-400:hover::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+}
+
+/* Smooth scroll behavior */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Animation improvements */
+.animate__animated {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+.animate__fast {
+  animation-duration: 0.3s;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 2px solid #f3f4f6;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Optimized prose styles for JD Preview */
+.prose h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.25rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h2:first-child {
+  margin-top: 0;
+}
+
+.prose h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  color: #334155;
+  margin-top: 0.75rem;
+  margin-bottom: 0.375rem;
+}
+
+.prose p, .prose li {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+  color: #475569;
+}
+
+.prose p {
+  margin-top: 0.375rem;
+  margin-bottom: 0.375rem;
+}
+
+.prose ul, .prose ol {
+  margin-top: 0.375rem;
+  margin-bottom: 0.375rem;
+  padding-left: 1rem;
+}
+
+.prose li {
+  margin-top: 0.125rem;
+}
+
+.prose strong {
+  color: #334155;
+  font-weight: 600;
+}
+
+/* Utility: line clamp (fallback if Tailwind plugin not present) */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
