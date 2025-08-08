@@ -1,9 +1,8 @@
 
 
 import React, { useState, useEffect, useRef, FormEvent, useMemo, KeyboardEvent } from 'react';
-import { Chat, Content } from '@google/genai';
 import { AnalysisResult, ChatMessage, AISuggestion, SubScores, CourseRecommendation, StructuredJd, ImprovementLog, AnalysisSession } from '../types';
-import { startCoachChat } from '../services/geminiService';
+import { startCoachChat, OpenAIChat } from '../services/openAIService';
 import SuggestionCard from './SuggestionCard';
 import CourseSuggestionCard from './CourseSuggestionCard';
 import CoachProgressTracker from './CoachProgressTracker';
@@ -218,7 +217,7 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
   const [isJdEditing, setIsJdEditing] = useState(false);
   const [isProgressExpanded, setIsProgressExpanded] = useState(false);
 
-  const chatSession = useRef<Chat | null>(null);
+  const chatSession = useRef<OpenAIChat | null>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -282,13 +281,15 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
       const jdTextForChat = structuredJd ? formatStructuredJdToMarkdown(structuredJd) : '';
       chatSession.current = startCoachChat(cvText, jdTextForChat, tasksForCoach);
 
-      // Reset state and parse initial messages from the coach.
-      const history: Content[] = chatSession.current.getHistory();
-      const initialMessages: ChatMessage[] = history
-        .filter(h => h.role === 'model')
-        .flatMap(h => parseFullResponse(h.parts.map(p => ('text' in p ? p.text : '')).join(' ')));
+      // Create initial greeting message from CV Coach
+      const greetingMessage: ChatMessage = {
+        role: 'agent',
+        content: `Hello, I'm your CV Coach. I've analyzed your CV and the job description. We'll work through focused improvements with clear, actionable steps.\n\nAreas to address:\n${tasksForCoach.map(task => `- ${task}`).join('\n')}\n\nWe'll start with: ${tasksForCoach[0]}. If you prefer another language, just let me know.`,
+        timestamp: new Date(),
+        quickReplies: ["I'm ready", "Let's start", "Reply in Vietnamese"]
+      };
       
-      setChatHistory(initialMessages);
+      setChatHistory([greetingMessage]);
       setIsProgressExpanded(false);
     }
     // NOTE: `cvText` is intentionally omitted. The chat should only be re-initialized
@@ -429,7 +430,7 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
   };
 
   return (
-    <div className="absolute inset-0 flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200/30 overflow-hidden">
+    <div className="h-full w-full flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200/30 overflow-hidden">
       <CoachProgressTracker
         sessions={analysisSessions}
         isExpanded={isProgressExpanded}
@@ -476,14 +477,14 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
       <div className="flex-1 flex flex-col min-h-0 bg-slate-50/50">
         {activeTab === 'coach' && (
           <>
-            <div ref={chatContainerRef} className="flex-1 p-4 space-y-5 overflow-y-auto hide-scrollbar">
+            <div ref={chatContainerRef} className="flex-1 p-4 space-y-5 overflow-y-auto smooth-scroll scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent hover:scrollbar-thumb-slate-400">
               {chatHistory.map((msg, index) => (
                 <div key={index} className={`group flex w-full items-end ${
                     msg.role === 'agent' 
                     ? 'justify-start animate__animated animate__fadeInLeft animate__faster' 
                     : 'justify-end animate__animated animate__fadeInRight animate__faster'
                 }`}>
-                  <div className={`flex flex-col gap-2 max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  <div className={`flex flex-col gap-2 max-w-[85%] min-w-0 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                     {msg.content && (
                         <div 
                             title={`Sent at ${msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
@@ -572,9 +573,9 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
                 />
             </div>
           ) : (
-            <div className="flex-1 p-2 overflow-y-auto bg-slate-50 hide-scrollbar">
+            <div className="flex-1 overflow-y-auto bg-slate-50 smooth-scroll scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent hover:scrollbar-thumb-slate-400">
                 <div
-                    className="w-full h-full bg-white rounded-2xl p-6 md:p-8 prose max-w-none overflow-y-auto hide-scrollbar border border-slate-200"
+                    className="h-full bg-white m-2 rounded-2xl p-4 md:p-5 prose prose-sm max-w-none border border-slate-200"
                     dangerouslySetInnerHTML={{ __html: jdAsHtml }}
                 />
             </div>

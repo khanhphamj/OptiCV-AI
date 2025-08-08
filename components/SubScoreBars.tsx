@@ -54,7 +54,6 @@ const SubScoreItem: React.FC<{ metric: MetricConfig; score: number }> = ({ metri
 const SubScoreBars: React.FC<SubScoreBarsProps> = ({ subScores }) => {
     return (
         <div className="bg-white rounded-2xl lg:rounded-3xl p-3 lg:p-6 shadow-lg border border-slate-200/30 space-y-4 lg:space-y-6">
-             <h3 className="text-lg lg:text-xl font-bold text-gray-800 font-headline">Detailed Analysis</h3>
             {METRICS_CONFIG.map(metric => {
                 const data = subScores[metric.id];
                 if (!data) return null;

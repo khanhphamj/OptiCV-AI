@@ -26,9 +26,10 @@ export interface SubScores {
 
 export interface AnalysisResult {
   suitability_score: number;
-  overall_summary: string;
+  summary: string;
   strengths: string[];
-  improvement_areas: string[];
+  weaknesses: string[];
+  recommendations: string[];
   sub_scores: SubScores;
 }
 
