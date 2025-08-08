@@ -87,7 +87,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
         {isAnalyzing && <SimpleLoader />}
         
         {/* Wide Responsive Layout */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-1 gap-4 lg:gap-6 lg:h-fit">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-1 lg:items-stretch gap-4 lg:gap-6">
           {/* Scores Section - Wider layout */}
           <div className="lg:col-span-4 flex flex-col space-y-4">
             {/* Main Score Card - Compact for wider layout */}
@@ -105,9 +105,9 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
             </div>
           </div>
           
-          {/* CV Coach Section - Fixed height to force internal scrolling */}
-          <div className="lg:col-span-8 relative">
-            <div className="h-[600px] lg:h-[700px] xl:h-[750px] w-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
+          {/* CV Coach Section - Match height with left column (grid stretch) */}
+          <div className="lg:col-span-8 flex">
+            <div className="w-full h-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
               <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}
