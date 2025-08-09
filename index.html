@@ -33,7 +33,8 @@
       s.onload = function() {
         gtag('js', new Date());
         gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'granted' });
-        gtag('config', GA_ID, { send_page_view: true });
+        // We emit page views manually from the SPA; avoid double-counting here
+        gtag('config', GA_ID, { send_page_view: false });
       };
       document.head.appendChild(s);
     })();
