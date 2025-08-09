@@ -31,6 +31,13 @@ export default function App() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationClass, setAnimationClass] = useState('animate__animated animate__fadeIn');
 
+  // Track initial page view with GA4 once on mount
+  useEffect(() => {
+    try {
+      trackPageView();
+    } catch {}
+  }, []);
+
   const changeStep = (
     targetStep: Step,
     options: { isStartOver?: boolean; onStepChange?: () => void } = {}
@@ -315,7 +322,6 @@ export default function App() {
 
       <main className="flex-grow p-1.5 sm:p-3 md:p-4 lg:p-6 w-full">
         <div className="max-w-6xl mx-auto">
-          {useEffect(() => { try { trackPageView(); } catch {} }, [])}
           {error && (
             <div className="max-w-3xl mx-auto bg-red-100 backdrop-blur-lg border border-red-500/20 text-red-900 px-4 py-3 rounded-xl mb-6 text-sm text-center shadow-lg animate__animated animate__shakeX">
               <strong>Error:</strong> {error}
