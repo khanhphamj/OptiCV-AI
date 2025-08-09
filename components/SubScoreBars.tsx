@@ -31,19 +31,19 @@ const SubScoreItem: React.FC<{ metric: MetricConfig; score: number }> = ({ metri
     
     return (
         <div>
-            <div className="flex justify-between items-center mb-1 text-xs sm:text-sm">
-                <div className="flex items-center gap-1.5 sm:gap-2 font-medium text-gray-700">
-                    <metric.icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+            <div className="flex justify-between items-center mb-0.5 sm:mb-1">
+                <div className="flex items-center gap-1 sm:gap-1.5 font-medium text-gray-700">
+                    <metric.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-gray-500 flex-shrink-0" />
                     <span className="text-xs sm:text-sm">{metric.label}</span>
                 </div>
-                <div className={`font-numeric flex items-center gap-1 font-bold ${text}`}>
-                    <span className="text-sm sm:text-base">{score}%</span>
-                    {isHighScorer && <HiStar className="w-4 h-4 text-amber-500" />}
+                <div className={`font-numeric flex items-center gap-0.5 font-bold ${text}`}>
+                    <span className="text-xs sm:text-sm">{score}%</span>
+                    {isHighScorer && <HiStar className="w-3 h-3 text-amber-500" />}
                 </div>
             </div>
-            <div className="w-full bg-slate-200 rounded-full h-2.5 shadow-inner">
+            <div className="w-full bg-slate-200 rounded-full h-1.5 sm:h-2 shadow-inner">
                 <div
-                    className={`h-2.5 rounded-full transition-all duration-1000 ease-out ${bar}`}
+                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-1000 ease-out ${bar}`}
                     style={{ width: `${score}%` }}
                 />
             </div>
@@ -53,7 +53,7 @@ const SubScoreItem: React.FC<{ metric: MetricConfig; score: number }> = ({ metri
 
 const SubScoreBars: React.FC<SubScoreBarsProps> = ({ subScores }) => {
     return (
-        <div className="bg-white rounded-2xl lg:rounded-3xl p-3 lg:p-6 shadow-lg border border-slate-200/30 space-y-4 lg:space-y-6">
+        <div className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-2.5 lg:p-3 xl:p-4 shadow-lg border border-slate-200/30 space-y-2 sm:space-y-2.5 lg:space-y-3">
             {METRICS_CONFIG.map(metric => {
                 const data = subScores[metric.id];
                 if (!data) return null;

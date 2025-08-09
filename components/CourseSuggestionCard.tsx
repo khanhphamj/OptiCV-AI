@@ -27,11 +27,11 @@ const CourseSuggestionCard: React.FC<CourseSuggestionCardProps> = ({ recommendat
     return (
         <div className="bg-white border border-blue-200/80 rounded-lg p-3 my-2 shadow-lg shadow-blue-500/10">
             <div className="flex items-center gap-2 mb-3">
-                <HiBookOpen className="w-5 h-5 text-blue-600"/>
-                <p className="text-xs font-semibold text-blue-600 uppercase">Learning Suggestion</p>
+                <HiBookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600"/>
+                <p className="text-xs-consistent font-semibold text-blue-600 uppercase">Learning Suggestion</p>
             </div>
-            <div className="space-y-3 text-sm">
-                <p className="text-gray-700">To bridge the gap in <strong className="font-semibold text-gray-900">{recommendation.missing_skill}</strong>, consider one of these top-rated courses:</p>
+            <div className="space-y-3">
+                <p className="text-gray-700 text-sm-consistent">To bridge the gap in <strong className="font-semibold text-gray-900">{recommendation.missing_skill}</strong>, consider one of these top-rated courses:</p>
                 <ul className="space-y-2">
                     {recommendation.courses.map((course, index) => {
                         const url = generateCourseUrl(course);
@@ -47,8 +47,8 @@ const CourseSuggestionCard: React.FC<CourseSuggestionCardProps> = ({ recommendat
                                          <HiBookOpen className="w-4 h-4 text-blue-600" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-gray-800 truncate group-hover:text-blue-700">{course.title}</p>
-                                        <p className="text-xs text-gray-500">{course.platform}</p>
+                                        <p className="font-semibold text-gray-800 truncate group-hover:text-blue-700 text-sm-consistent">{course.title}</p>
+                                        <p className="text-xs-consistent text-gray-500">{course.platform}</p>
                                     </div>
                                     <div className="flex-shrink-0">
                                         <HiArrowTopRightOnSquare className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />

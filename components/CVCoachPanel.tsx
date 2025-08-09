@@ -430,31 +430,33 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200/30 overflow-hidden">
+    <div className="h-full w-full flex flex-col bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg border border-slate-200/30 overflow-hidden">
       <CoachProgressTracker
         sessions={analysisSessions}
         isExpanded={isProgressExpanded}
         onToggle={() => setIsProgressExpanded(p => !p)}
       />
-      <header className="flex-grow-0 flex-shrink-0 flex items-center justify-between p-2 border-b border-slate-200">
-        <div className="flex-grow flex items-center gap-2">
+      <header className="flex-grow-0 flex-shrink-0 flex items-center justify-between p-1 sm:p-1.5 lg:p-2 border-b border-slate-200">
+        <div className="flex-grow flex items-center gap-1 sm:gap-2">
             <button
               onClick={() => { setActiveTab('coach'); setIsJdEditing(false); }}
-              className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-md transition-all ${
+              className={`flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${
                   activeTab === 'coach' ? 'bg-slate-100 text-emerald-700 shadow-sm' : 'text-gray-600 hover:bg-slate-100/50'
               }`}
             >
-              <HiSparkles className="w-5 h-5" />
-              CV Coach
+              <HiSparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">CV Coach</span>
+              <span className="sm:hidden">Coach</span>
             </button>
              <button
                onClick={() => setActiveTab('preview-jd')}
-               className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-md transition-all ${
+               className={`flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${
                   activeTab === 'preview-jd' ? 'bg-slate-100 text-emerald-700 shadow-sm' : 'text-gray-600 hover:bg-slate-100/50'
               }`}
             >
-               <HiOutlineClipboardDocumentList className="w-5 h-5" />
-              Preview JD
+               <HiOutlineClipboardDocumentList className="w-4 h-4 sm:w-5 sm:h-5" />
+               <span className="hidden sm:inline">Preview JD</span>
+               <span className="sm:hidden">JD</span>
             </button>
         </div>
          {activeTab === 'preview-jd' && (
@@ -488,14 +490,16 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
                     {msg.content && (
                         <div 
                             title={`Sent at ${msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
-                            className={`p-4 rounded-xl shadow-md ${
+                            className={`p-3 sm:p-4 rounded-xl shadow-md ${
                                 msg.role === 'agent' 
                                 ? 'bg-white text-gray-800 rounded-es-none border border-slate-200/80' 
                                 : 'bg-emerald-600 text-white rounded-ee-none shadow-emerald-500/20'
                             }`}
                             style={{ maxHeight: '16rem', overflowY: 'auto' }}
                         >
-                            <p className="text-base font-normal whitespace-pre-wrap">{msg.content}</p>
+                            <p className={`font-normal whitespace-pre-wrap ${
+                                msg.role === 'agent' ? 'chat-message-agent' : 'chat-message-user'
+                            }`}>{msg.content}</p>
                         </div>
                     )}
                     {msg.suggestion && (
@@ -539,7 +543,7 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
               )}
             </div>
 
-            <div className="p-4 border-t border-slate-200 bg-white/70">
+            <div className="p-3 sm:p-4 border-t border-slate-200 bg-white/70">
               <form onSubmit={handleFormSubmit} className="flex items-end gap-2">
                 <textarea
                   ref={textareaRef}
@@ -548,16 +552,16 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
                   onChange={(e) => setUserInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Type your response here..."
-                  className="flex-1 w-full px-4 py-2 text-sm text-gray-800 bg-slate-100 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition shadow-inner resize-none overflow-y-auto hide-scrollbar"
-                  style={{ maxHeight: '120px' }}
+                  className="flex-1 w-full px-3 py-2 text-sm-consistent text-gray-800 bg-slate-100 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition shadow-inner resize-none overflow-y-auto hide-scrollbar"
+                  style={{ maxHeight: '100px' }}
                   disabled={isThinking || isAnalyzing}
                 />
                 <button
                   type="submit"
                   disabled={isThinking || isAnalyzing || !userInput.trim()}
-                  className="flex-shrink-0 p-2 h-9 w-9 flex items-center justify-center text-white bg-emerald-600 rounded-lg hover:bg-emerald-500 disabled:bg-gray-400/80 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 transition-colors shadow-lg"
+                  className="flex-shrink-0 p-1.5 sm:p-2 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center text-white bg-emerald-600 rounded-lg hover:bg-emerald-500 disabled:bg-gray-400/80 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 transition-colors shadow-lg"
                 >
-                  <HiPaperAirplane className="w-5 h-5" />
+                  <HiPaperAirplane className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </form>
             </div>
@@ -584,24 +588,28 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
         )}
       </div>
 
-      <div className="bg-slate-100 border-t border-slate-200 p-3 rounded-b-3xl mt-auto">
-        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3">
-          <button onClick={onStartOver} className="inline-flex items-center gap-2 rounded-md bg-white px-3.5 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300/50 hover:bg-slate-50 transition-colors">
-            <HiArrowUturnLeft className="h-4 w-4" /> Start Over
+      <div className="bg-slate-100 border-t border-slate-200 p-1.5 sm:p-2 lg:p-2.5 rounded-b-lg sm:rounded-b-xl lg:rounded-b-2xl mt-auto">
+        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-1.5 sm:gap-2">
+          <button onClick={onStartOver} className="inline-flex items-center gap-1 rounded-md bg-white px-2 sm:px-2.5 py-1 sm:py-1.5 text-xs font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300/50 hover:bg-slate-50 transition-colors">
+            <HiArrowUturnLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> 
+            <span className="hidden sm:inline">Start Over</span>
+            <span className="sm:hidden">Reset</span>
           </button>
-          <button onClick={handleDownload} className="inline-flex items-center gap-2 rounded-md bg-white px-3.5 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300/50 hover:bg-slate-50 transition-colors">
-            <HiDocumentArrowDown className="h-4 w-4" /> Download
+          <button onClick={handleDownload} className="inline-flex items-center gap-1 rounded-md bg-white px-2 sm:px-2.5 py-1 sm:py-1.5 text-xs font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300/50 hover:bg-slate-50 transition-colors">
+            <HiDocumentArrowDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> 
+            <span className="hidden sm:inline">Download</span>
+            <span className="sm:hidden">Save</span>
           </button>
-          <button onClick={onReanalyze} disabled={isAnalyzing} className="group relative overflow-hidden inline-flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed border border-emerald-700/50 hover:scale-105">
+          <button onClick={onReanalyze} disabled={isAnalyzing} className="group relative overflow-hidden inline-flex items-center justify-center gap-1 rounded-md bg-emerald-600 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold text-white shadow-lg hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed border border-emerald-700/50 hover:scale-105">
             <LottieAnimation
               animationPath="/animations/sparkles-loop-loader.json"
               className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-20 transition-opacity"
             />
-            <span className="relative z-10 flex items-center gap-2">
+            <span className="relative z-10 flex items-center gap-1">
               {isAnalyzing ? (
-                <><HiArrowPath className="h-4 w-4 animate-spin" /> Analyzing...</>
+                <><HiArrowPath className="h-3 w-3 sm:h-3.5 sm:w-3.5 animate-spin" /> <span className="hidden sm:inline">Analyzing...</span><span className="sm:hidden">...</span></>
               ) : (
-                <><HiSparkles className="h-4 w-4" /> Re-analyze</>
+                <><HiSparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> <span className="hidden sm:inline">Re-analyze</span><span className="sm:hidden">Analyze</span></>
               )}
             </span>
           </button>

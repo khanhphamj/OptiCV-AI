@@ -16,9 +16,9 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
           const isCompleted = currentStep > step.id;
           const isActive = currentStep === step.id;
 
-          let tileClasses = 'relative flex flex-col items-center justify-center w-28 h-28 p-2 sm:w-48 sm:h-32 sm:p-4 rounded-2xl transition-all duration-300 ease-in-out';
-          let circleClasses = 'flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full font-bold text-lg transition-all duration-300 mb-2 sm:mb-3 shadow-md';
-          let textClasses = 'font-bold transition-colors duration-300 text-center text-xs sm:text-base';
+          let tileClasses = 'relative flex flex-col items-center justify-center w-24 h-20 p-1.5 sm:w-40 sm:h-24 sm:p-3 rounded-xl transition-all duration-300 ease-in-out';
+          let circleClasses = 'flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full font-bold text-sm transition-all duration-300 mb-1.5 sm:mb-2 shadow-md';
+          let textClasses = 'font-bold transition-colors duration-300 text-center text-xs sm:text-sm';
 
           if (isActive) {
             tileClasses += ' bg-white border-2 border-emerald-400 shadow-2xl shadow-emerald-500/20 scale-105 z-10';
@@ -39,7 +39,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
               <li className="relative flex-1 flex justify-center">
                 <div className={tileClasses}>
                   <span className={circleClasses}>
-                    {isCompleted ? <HiCheck className="w-5 h-5" /> : stepNumber}
+                    {isCompleted ? <HiCheck className="w-3 h-3 sm:w-4 sm:h-4" /> : stepNumber}
                   </span>
                   <span className={textClasses}>{step.name}</span>
                 </div>

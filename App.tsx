@@ -300,13 +300,13 @@ export default function App() {
       <Header />
       
       <div id="step-indicator" className="relative z-20 -mt-16">
-        <div className="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto py-2 sm:py-3 lg:py-4 px-3 sm:px-4 lg:px-6">
             <StepIndicator steps={STEPS} currentStep={currentStep} />
         </div>
       </div>
 
-      <main className="flex-grow p-4 sm:p-6 lg:p-8 w-full">
-        <div className="max-w-[1450px] mx-auto">
+      <main className="flex-grow p-1.5 sm:p-3 md:p-4 lg:p-6 w-full">
+        <div className="max-w-6xl mx-auto">
           {error && (
             <div className="max-w-3xl mx-auto bg-red-100 backdrop-blur-lg border border-red-500/20 text-red-900 px-4 py-3 rounded-xl mb-6 text-sm text-center shadow-lg animate__animated animate__shakeX">
               <strong>Error:</strong> {error}

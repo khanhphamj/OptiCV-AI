@@ -24,13 +24,13 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({ suggestion, onApply, on
 
     return (
         <div className="bg-white border border-gray-200/80 rounded-lg p-3 my-2 shadow-md shadow-gray-500/5">
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-2">AI Suggestion</p>
-            <div className="space-y-2 text-sm">
+            <p className="text-xs-consistent font-semibold text-gray-500 uppercase mb-2">AI Suggestion</p>
+            <div className="space-y-2">
                 <div>
-                    <p className="font-medium text-red-600 line-through decoration-red-400/80 bg-red-50 p-2 rounded-md">- {suggestion.original}</p>
+                    <p className="font-medium text-red-600 line-through decoration-red-400/80 bg-red-50 p-2 rounded-md text-sm-consistent">- {suggestion.original}</p>
                 </div>
                 <div>
-                    <p className="font-medium text-green-700 bg-green-50/80 p-2 rounded-md">+ {suggestion.replacement}</p>
+                    <p className="font-medium text-green-700 bg-green-50/80 p-2 rounded-md text-sm-consistent">+ {suggestion.replacement}</p>
                 </div>
             </div>
             <div className="mt-3 flex items-center gap-2">

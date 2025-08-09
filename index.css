@@ -75,12 +75,39 @@ body {
   animation-duration: 0.3s;
 }
 
-/* Focus styles for accessibility */
+/* Enhanced Focus styles for accessibility */
 button:focus-visible,
 input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #3b82f6;
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid #059669; /* emerald-600 */
   outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ensure minimum contrast ratios */
+.text-gray-500 {
+  color: #6b7280 !important; /* Improved contrast */
+}
+
+.text-gray-400 {
+  color: #9ca3af !important; /* Better visibility */
+}
+
+/* Typography accessibility */
+.text-xs-consistent,
+.text-sm-consistent,
+.text-base-consistent {
+  font-weight: 400; /* Ensure readability */
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .chat-message,
+  .chat-message-user,
+  .chat-message-agent {
+    font-weight: 500;
+  }
 }
 
 /* Loading spinner */
@@ -96,15 +123,15 @@ textarea:focus-visible {
   100% { transform: rotate(360deg); }
 }
 
-/* Optimized prose styles for JD Preview */
+/* Consistent prose styles for JD Preview */
 .prose h2 {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.125rem; /* 18px */
+  font-size: 1rem; /* 16px - consistent with text-lg */
   font-weight: 700;
   color: #1e293b;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 0.25rem;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   margin-bottom: 0.5rem;
 }
 
@@ -114,27 +141,27 @@ textarea:focus-visible {
 
 .prose h3 {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1rem; /* 16px */
+  font-size: 0.875rem; /* 14px - consistent with text-sm */
   font-weight: 600;
   color: #334155;
-  margin-top: 0.75rem;
-  margin-bottom: 0.375rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .prose p, .prose li {
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem; /* 14px - consistent with base text */
   line-height: 1.5;
   color: #475569;
 }
 
 .prose p {
-  margin-top: 0.375rem;
-  margin-bottom: 0.375rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .prose ul, .prose ol {
-  margin-top: 0.375rem;
-  margin-bottom: 0.375rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
   padding-left: 1rem;
 }
 
@@ -147,10 +174,121 @@ textarea:focus-visible {
   font-weight: 600;
 }
 
+.prose a {
+  color: #059669; /* emerald-600 */
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.prose a:hover {
+  color: #047857; /* emerald-700 */
+  text-decoration: underline;
+}
+
+.prose blockquote {
+  font-style: italic;
+  color: #475569; /* slate-600 */
+  border-left: 0.25rem solid #cbd5e1; /* slate-300 */
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
 /* Utility: line clamp (fallback if Tailwind plugin not present) */
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Typography System - Professional & Consistent */
+.text-xs-consistent {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.4;
+}
+
+.text-sm-consistent {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+}
+
+.text-base-consistent {
+  font-size: 0.875rem; /* 14px - consistent with compact design */
+  line-height: 1.5;
+}
+
+.text-lg-consistent {
+  font-size: 1rem; /* 16px */
+  line-height: 1.6;
+}
+
+.text-xl-consistent {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.6;
+}
+
+.text-2xl-consistent {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.5;
+}
+
+/* Chat-specific typography */
+.chat-message {
+  font-size: 0.875rem; /* 14px - consistent with UI */
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.chat-message-user {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.chat-message-agent {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Responsive utilities for better zoom compatibility */
+@media (max-width: 1536px) and (min-width: 1280px) {
+  /* 2xl breakpoint adjustments for zoom 100% */
+  .responsive-container {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1280px) and (min-width: 1024px) {
+  /* xl breakpoint adjustments for zoom 100% */
+  .responsive-container {
+    max-width: 1000px;
+  }
+}
+
+/* Improved text scaling for different zoom levels */
+.responsive-text-sm {
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+}
+
+.responsive-text-base {
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+}
+
+.responsive-text-lg {
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+}
+
+/* Improved spacing for different zoom levels */
+.responsive-spacing-sm {
+  padding: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.responsive-spacing-md {
+  padding: clamp(0.75rem, 2vw, 1rem);
+}
+
+.responsive-spacing-lg {
+  padding: clamp(1rem, 2.5vw, 1.5rem);
 }

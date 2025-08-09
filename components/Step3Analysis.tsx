@@ -97,9 +97,11 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
     return () => window.removeEventListener('resize', applyEqualHeights);
   }, [result, analysisSessions, structuredJd]);
 
-  // Robust auto-scroll to align Step 3
+  // Robust auto-scroll to align Step 3 (desktop only)
   useEffect(() => {
     if (!leftRef.current) return;
+    // Do not auto-scroll on mobile/tablet (< xl)
+    if (window.innerWidth < 1280) return;
     const offset = 160; // adjust 120–200 to taste (distance from top)
     const safeBottom = 140; // generic safety from absolute bottom (px)
     const footerMargin = 24; // keep viewport bottom at least this far above footer top (px)
@@ -125,16 +127,6 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
       const desired = rect.top + scrollTop - offset;
       let target = Math.min(Math.max(desired, 0), bottomClamp);
 
-      // On small screens, prefer snapping just below the step indicator
-      if (window.innerWidth < 1024) {
-        const step = document.getElementById('step-indicator');
-        if (step) {
-          const stepRect = step.getBoundingClientRect();
-          const stepBottom = (window.pageYOffset || 0) + stepRect.bottom;
-          const mobileOffset = 12; // small gap below step-by-step bar
-          target = Math.max(target, stepBottom + mobileOffset);
-        }
-      }
       window.scrollTo({ top: target, behavior: 'smooth' });
     };
     // double rAF to wait for layout to settle
@@ -146,12 +138,12 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
       <div className="relative">
         {isAnalyzing && <SimpleLoader />}
         
-        {/* Wide Responsive Layout */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-1 lg:items-stretch gap-4 lg:gap-6">
-          {/* Scores Section - Wider layout */}
-          <div ref={leftRef} className="lg:col-span-4 flex flex-col space-y-4">
-            {/* Main Score Card - Compact for wider layout */}
-            <div className="bg-gradient-to-br from-white via-white to-emerald-50/30 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-2xl shadow-emerald-500/10 border border-emerald-100/50">
+        {/* Compact Responsive Layout */}
+        <div className="flex flex-col xl:grid xl:grid-cols-[35%_65%] xl:grid-rows-1 xl:items-stretch gap-2 sm:gap-3 lg:gap-4 xl:gap-5">
+          {/* Scores Section - Compact sizing */}
+          <div ref={leftRef} className="xl:col-span-1 flex flex-col space-y-2 sm:space-y-2.5 lg:space-y-3">
+            {/* Main Score Card - Compact padding */}
+            <div className="bg-gradient-to-br from-white via-white to-emerald-50/30 rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 xl:p-5 shadow-xl shadow-emerald-500/10 border border-emerald-100/50">
               <AnalysisPanel
                 score={result.suitability_score}
                 previousScore={previousScore}
@@ -163,9 +155,9 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
             <SubScoreBars subScores={result.sub_scores} />
           </div>
           
-          {/* CV Coach Section - Match height with left column and scroll inside */}
-          <div className="lg:col-span-8 flex">
-            <div ref={rightRef} className="w-full h-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-2xl lg:rounded-3xl shadow-2xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
+          {/* CV Coach Section - Compact responsive behavior */}
+          <div className="xl:col-span-1 flex min-h-[500px] xl:min-h-0">
+            <div ref={rightRef} className="w-full h-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-lg sm:rounded-xl lg:rounded-2xl shadow-xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
               <CVCoachPanel
                 analysisResult={result}
                 cvText={cvText}
