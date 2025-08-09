@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, FormEvent, useMemo, KeyboardEvent } from 'react';
 import { AnalysisResult, ChatMessage, AISuggestion, SubScores, CourseRecommendation, StructuredJd, ImprovementLog, AnalysisSession } from '../types';
 import { startCoachChat, OpenAIChat } from '../services/openAIService';
+import { trackEvent } from '../utils/analytics';
 import SuggestionCard from './SuggestionCard';
 import CourseSuggestionCard from './CourseSuggestionCard';
 import CoachProgressTracker from './CoachProgressTracker';
@@ -425,6 +426,7 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
     link.download = 'cv_improvement_log.txt';
     document.body.appendChild(link);
     link.click();
+    try { trackEvent('download_clicked', { items: allImprovements.length }); } catch {}
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
@@ -439,7 +441,7 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
       <header className="flex-grow-0 flex-shrink-0 flex items-center justify-between p-1 sm:p-1.5 lg:p-2 border-b border-slate-200">
         <div className="flex-grow flex items-center gap-1 sm:gap-2">
             <button
-              onClick={() => { setActiveTab('coach'); setIsJdEditing(false); }}
+              onClick={() => { setActiveTab('coach'); setIsJdEditing(false); try { trackEvent('tab_click', { tab: 'coach' }); } catch {} }}
               className={`flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${
                   activeTab === 'coach' ? 'bg-slate-100 text-emerald-700 shadow-sm' : 'text-gray-600 hover:bg-slate-100/50'
               }`}
@@ -449,7 +451,7 @@ const CVCoachPanel: React.FC<CVCoachPanelProps> = ({
               <span className="sm:hidden">Coach</span>
             </button>
              <button
-               onClick={() => setActiveTab('preview-jd')}
+               onClick={() => { setActiveTab('preview-jd'); try { trackEvent('tab_click', { tab: 'preview-jd' }); } catch {} }}
                className={`flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${
                   activeTab === 'preview-jd' ? 'bg-slate-100 text-emerald-700 shadow-sm' : 'text-gray-600 hover:bg-slate-100/50'
               }`}

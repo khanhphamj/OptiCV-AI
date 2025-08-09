@@ -14,6 +14,28 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+  <!-- Google Analytics (GA4) - set your Measurement ID below -->
+  <script>
+    window.GA_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || 'G-9XED2S9M8H';
+    (function() {
+      var GA_ID = window.GA_MEASUREMENT_ID;
+      if (!GA_ID || GA_ID === 'G-XXXXXXXXXX') {
+        // GA not configured yet; skip loading to avoid errors
+        return;
+      }
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      // Optional: basic consent defaults (analytics on, ads off)
+      gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'granted' });
+      gtag('config', GA_ID, { send_page_view: true });
+    })();
+  </script>
 <script type="importmap">
 {
   "imports": {

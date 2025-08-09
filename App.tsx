@@ -11,6 +11,7 @@ import { analyzeCv, validateDocuments, structureJd } from './services/openAIServ
 import LoadingAnalysis from './components/LoadingAnalysis';
 import Footer from './components/Footer';
 import { HiExclamationTriangle, HiChevronLeft } from 'react-icons/hi2';
+import { trackEvent, trackPageView } from './utils/analytics';
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState<Step>(Step.UploadCV);
@@ -53,6 +54,7 @@ export default function App() {
         }
         
         setCurrentStep(targetStep);
+        try { trackEvent('step_change', { step: targetStep }); } catch {}
         
         if (isStartOver) {
             setAnimationClass('animate__animated animate__fadeIn animate__fast');
@@ -71,6 +73,7 @@ export default function App() {
     setCvFileName(fileName);
     changeStep(Step.UploadJD);
     setError(null);
+    try { trackEvent('cv_uploaded', { fileName }); } catch {}
   };
 
   const handleJdUploadAndAnalyze = (text: string, fileName:string) => {
@@ -78,12 +81,14 @@ export default function App() {
     setJdFileName(fileName);
     setAnalysisSessions([]); // Reset history on new analysis
     startFullAnalysis(cvText, text);
+    try { trackEvent('jd_uploaded', { fileName }); } catch {}
   };
 
   const startFullAnalysis = useCallback(async (cv: string, jd: string) => {
     setError(null);
     setValidationWarning(null);
     changeStep(Step.Analysis);
+    try { trackEvent('analysis_started'); } catch {}
 
     // Step 1: Validation
     setLoadingStage('validation');
@@ -148,12 +153,14 @@ export default function App() {
       });
 
       setLoadingStage('complete');
+      try { trackEvent('analysis_completed', { score: analysis.suitability_score }); } catch {}
     } catch (e) {
       console.error('❌ Analysis failed:', e);
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred during analysis.';
       setError(`Failed to analyze documents. ${errorMessage}`);
       changeStep(Step.UploadJD);
       setLoadingStage(null);
+      try { trackEvent('analysis_failed'); } catch {}
     }
   }, [currentStep]);
   
@@ -170,6 +177,7 @@ export default function App() {
 
   const handleReanalyze = () => {
     runActualAnalysis(cvText, jdText);
+    try { trackEvent('reanalyze_clicked'); } catch {}
   };
 
   const handleBack = () => {
@@ -307,6 +315,7 @@ export default function App() {
 
       <main className="flex-grow p-1.5 sm:p-3 md:p-4 lg:p-6 w-full">
         <div className="max-w-6xl mx-auto">
+          {useEffect(() => { try { trackPageView(); } catch {} }, [])}
           {error && (
             <div className="max-w-3xl mx-auto bg-red-100 backdrop-blur-lg border border-red-500/20 text-red-900 px-4 py-3 rounded-xl mb-6 text-sm text-center shadow-lg animate__animated animate__shakeX">
               <strong>Error:</strong> {error}
