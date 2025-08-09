@@ -23,17 +23,19 @@
         // GA not configured yet; skip loading to avoid errors
         return;
       }
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
       window.dataLayer = window.dataLayer || [];
       function gtag(){ dataLayer.push(arguments); }
       window.gtag = gtag;
-      gtag('js', new Date());
-      // Optional: basic consent defaults (analytics on, ads off)
-      gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'granted' });
-      gtag('config', GA_ID, { send_page_view: true });
+      
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      s.onload = function() {
+        gtag('js', new Date());
+        gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'granted' });
+        gtag('config', GA_ID, { send_page_view: true });
+      };
+      document.head.appendChild(s);
     })();
   </script>
 <script type="importmap">
