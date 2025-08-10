@@ -135,11 +135,12 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
 
   return (
     <div id="step3-section" className="animate__animated animate__fadeInUp animate__fast">
-      <div className="relative">
-        {isAnalyzing && <SimpleLoader />}
-        
-        {/* Compact Responsive Layout */}
-        <div className="flex flex-col xl:grid xl:grid-cols-[35%_65%] xl:grid-rows-1 xl:items-stretch gap-2 sm:gap-3 lg:gap-4 xl:gap-5">
+      <div className="max-w-6xl mx-auto">
+        <div className="relative">
+          {isAnalyzing && <SimpleLoader />}
+          
+          {/* Compact Responsive Layout */}
+          <div className="flex flex-col xl:grid xl:grid-cols-[35%_65%] xl:grid-rows-1 xl:items-stretch gap-2 sm:gap-3 lg:gap-4 xl:gap-5">
           {/* Scores Section - Compact sizing */}
           <div ref={leftRef} className="xl:col-span-1 flex flex-col space-y-2 sm:space-y-2.5 lg:space-y-3">
             {/* Main Score Card - Compact padding */}
@@ -172,6 +173,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
                 onAddImprovementLog={onAddImprovementLog}
               />
             </div>
+          </div>
           </div>
         </div>
       </div>

@@ -321,7 +321,6 @@ export default function App() {
       </div>
 
       <main className="flex-grow p-1.5 sm:p-3 md:p-4 lg:p-6 w-full">
-        <div className="max-w-6xl mx-auto">
           {error && (
             <div className="max-w-3xl mx-auto bg-red-100 backdrop-blur-lg border border-red-500/20 text-red-900 px-4 py-3 rounded-xl mb-6 text-sm text-center shadow-lg animate__animated animate__shakeX">
               <strong>Error:</strong> {error}
@@ -331,7 +330,6 @@ export default function App() {
           <div className={animationClass}>
             {renderContent()}
           </div>
-        </div>
       </main>
       
       <Footer />

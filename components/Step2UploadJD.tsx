@@ -44,14 +44,14 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
   const isAnalyzeDisabled = (activeTab === 'paste' && pastedJd.trim().length < 50) || (activeTab === 'upload' && !fileData);
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-slate-200/30">
+    <div className="max-w-2xl mx-auto bg-white p-4 sm:p-6 rounded-3xl shadow-lg border border-slate-200/30">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 font-headline">Step 2: Add Job Description</h2>
-        <p className="mt-2 text-gray-600">Paste the job posting or upload the file for the role you're targeting.</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-headline">Step 2: Add Job Description</h2>
+        <p className="mt-1.5 text-sm sm:text-base text-gray-600">Paste the job posting or upload the file for the role you're targeting.</p>
       </div>
 
-      <div className="mt-8 space-y-4">
-        <div className="bg-slate-100 border border-slate-200/80 rounded-xl p-4">
+      <div className="mt-4 sm:mt-6 space-y-4">
+        <div className="bg-slate-100 border border-slate-200/80 rounded-xl p-3 sm:p-4">
           <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                   <div className="bg-emerald-100 p-2 rounded-full">
@@ -69,7 +69,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
         <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-lg">
           <button
             onClick={() => { setActiveTab('paste'); setError(null); }}
-            className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-all ${
+            className={`flex items-center justify-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md transition-all ${
               activeTab === 'paste' ? 'bg-white text-emerald-700 shadow' : 'text-gray-600 hover:bg-white/50'
             }`}
           >
@@ -78,7 +78,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
           </button>
           <button
             onClick={() => { setActiveTab('upload'); setError(null); }}
-            className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-all ${
+            className={`flex items-center justify-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md transition-all ${
               activeTab === 'upload' ? 'bg-white text-emerald-700 shadow' : 'text-gray-600 hover:bg-white/50'
             }`}
           >
@@ -95,8 +95,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
                 value={pastedJd}
                 onChange={(e) => setPastedJd(e.target.value)}
                 placeholder="Paste the complete job description here...&#10;&#10;Include:&#10;• Job title and requirements&#10;• Required skills and experience&#10;• Responsibilities and qualifications"
-                style={{ height: '260px' }}
-                className="w-full p-4 bg-slate-50 text-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none transition-colors shadow-inner hide-scrollbar"
+                className="w-full p-3 sm:p-4 bg-slate-50 text-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors shadow-inner hide-scrollbar resize-y min-h-40 sm:min-h-56 max-h-[60vh] overflow-auto"
               />
               <span className="absolute bottom-3 right-3 text-xs text-gray-500">
                 {pastedJd.trim().length} characters
@@ -123,16 +122,16 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-700 text-sm p-3 rounded-md border border-red-200">
+          <div className="bg-red-50 text-red-700 text-sm p-2 rounded-md border border-red-200">
             <strong>Error:</strong> {error}
           </div>
         )}
       </div>
 
-      <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-center gap-4">
+      <div className="mt-6 flex flex-col-reverse sm:flex-row items-center justify-center gap-4">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 rounded-lg bg-slate-200 px-6 py-3.5 text-base font-semibold text-gray-800 shadow-sm border border-slate-300/50 hover:bg-slate-300 transition-all"
+          className="inline-flex items-center gap-2 rounded-lg bg-slate-200 px-5 py-3 text-sm sm:text-base font-semibold text-gray-800 shadow-sm border border-slate-300/50 hover:bg-slate-300 transition-all"
         >
           <HiChevronLeft className="h-4 w-4" />
           Back
@@ -140,7 +139,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
         <button
           onClick={handleAnalyze}
           disabled={isAnalyzeDisabled}
-          className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-700 px-8 py-3.5 text-base font-semibold text-white shadow-lg border border-white/20 hover:bg-emerald-600 hover:shadow-emerald-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none hover:scale-105"
+          className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-700 px-7 py-3 text-sm sm:text-base font-semibold text-white shadow-lg border border-white/20 hover:bg-emerald-600 hover:shadow-emerald-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
         >
           <LottieAnimation
             animationPath="/animations/sparkles-loop-loader.json"
