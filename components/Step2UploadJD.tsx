@@ -44,21 +44,21 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
   const isAnalyzeDisabled = (activeTab === 'paste' && pastedJd.trim().length < 50) || (activeTab === 'upload' && !fileData);
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-4 sm:p-6 rounded-3xl shadow-lg border border-slate-200/30">
+    <div className="w-full sm:max-w-xl md:max-w-2xl mx-auto bg-white p-3 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200/30">
       <div className="text-center">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-headline">Step 2: Add Job Description</h2>
-        <p className="mt-1.5 text-sm sm:text-base text-gray-600">Paste the job posting or upload the file for the role you're targeting.</p>
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 font-headline">Step 2: Add Job Description</h2>
+        <p className="mt-1 text-sm sm:text-base text-gray-600">Paste the job posting or upload the file for the role you're targeting.</p>
       </div>
 
-      <div className="mt-4 sm:mt-6 space-y-4">
+      <div className="mt-3 sm:mt-5 md:mt-6 space-y-3 sm:space-y-4">
         <div className="bg-slate-100 border border-slate-200/80 rounded-xl p-3 sm:p-4">
           <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0">
                   <div className="bg-emerald-100 p-2 rounded-full">
                       <HiCheck className="h-5 w-5 text-emerald-600" />
                   </div>
-                  <div>
-                      <p className="font-semibold text-gray-800">CV: <span className="font-normal truncate">{cvFileName}</span></p>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-800 truncate">CV: <span className="font-normal">{cvFileName}</span></p>
                   </div>
               </div>
               <button onClick={onBack} className="text-sm font-semibold text-emerald-700 hover:text-emerald-600 transition-colors">Change CV</button>
@@ -73,7 +73,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
               activeTab === 'paste' ? 'bg-white text-emerald-700 shadow' : 'text-gray-600 hover:bg-white/50'
             }`}
           >
-            <HiPencil className="h-5 w-5" />
+            <HiPencil className="h-4 w-4 sm:h-5 sm:w-5" />
             Paste Text
           </button>
           <button
@@ -82,7 +82,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
               activeTab === 'upload' ? 'bg-white text-emerald-700 shadow' : 'text-gray-600 hover:bg-white/50'
             }`}
           >
-            <HiDocumentArrowUp className="h-5 w-5" />
+            <HiDocumentArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
             Upload File
           </button>
         </div>
@@ -95,9 +95,9 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
                 value={pastedJd}
                 onChange={(e) => setPastedJd(e.target.value)}
                 placeholder="Paste the complete job description here...&#10;&#10;Include:&#10;• Job title and requirements&#10;• Required skills and experience&#10;• Responsibilities and qualifications"
-                className="w-full p-3 sm:p-4 bg-slate-50 text-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors shadow-inner hide-scrollbar resize-y min-h-40 sm:min-h-56 max-h-[60vh] overflow-auto"
+                className="w-full p-2.5 sm:p-3 md:p-4 bg-slate-50 text-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors shadow-inner hide-scrollbar resize-y min-h-36 sm:min-h-48 md:min-h-56 max-h-[55vh] overflow-auto"
               />
-              <span className="absolute bottom-3 right-3 text-xs text-gray-500">
+              <span className="absolute bottom-2.5 right-2.5 text-xs text-gray-500">
                 {pastedJd.trim().length} characters
               </span>
             </div>
@@ -128,10 +128,10 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
         )}
       </div>
 
-      <div className="mt-6 flex flex-col-reverse sm:flex-row items-center justify-center gap-4">
+      <div className="mt-5 sm:mt-6 flex flex-col-reverse sm:flex-row items-center justify-center gap-3 sm:gap-4">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 rounded-lg bg-slate-200 px-5 py-3 text-sm sm:text-base font-semibold text-gray-800 shadow-sm border border-slate-300/50 hover:bg-slate-300 transition-all"
+          className="inline-flex items-center gap-2 rounded-lg bg-slate-200 px-4 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-gray-800 shadow-sm border border-slate-300/50 hover:bg-slate-300 transition-all"
         >
           <HiChevronLeft className="h-4 w-4" />
           Back
@@ -139,7 +139,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
         <button
           onClick={handleAnalyze}
           disabled={isAnalyzeDisabled}
-          className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-700 px-7 py-3 text-sm sm:text-base font-semibold text-white shadow-lg border border-white/20 hover:bg-emerald-600 hover:shadow-emerald-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
+          className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-700 px-6 sm:px-7 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg border border-white/20 hover:bg-emerald-600 hover:shadow-emerald-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
         >
           <LottieAnimation
             animationPath="/animations/sparkles-loop-loader.json"

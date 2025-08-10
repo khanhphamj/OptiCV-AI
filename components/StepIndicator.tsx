@@ -10,13 +10,13 @@ interface StepIndicatorProps {
 const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => {
   return (
     <nav aria-label="Progress">
-      <ol className="flex items-center">
+      <ol className="flex items-center overflow-x-auto no-scrollbar px-1 sm:px-0">
         {steps.map((step, index) => {
           const stepNumber = index + 1;
           const isCompleted = currentStep > step.id;
           const isActive = currentStep === step.id;
 
-          let tileClasses = 'relative flex flex-col items-center justify-center w-24 h-20 p-1.5 sm:w-40 sm:h-24 sm:p-3 rounded-xl transition-all duration-300 ease-in-out';
+          let tileClasses = 'relative flex flex-col items-center justify-center w-24 h-18 p-1.5 sm:w-40 sm:h-24 sm:p-3 rounded-xl transition-all duration-300 ease-in-out flex-shrink-0';
           let circleClasses = 'flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full font-bold text-sm transition-all duration-300 mb-1.5 sm:mb-2 shadow-md';
           let textClasses = 'font-bold transition-colors duration-300 text-center text-xs sm:text-sm';
 
@@ -47,7 +47,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
 
               {index < steps.length - 1 && (
                 <li className="flex-shrink-0" aria-hidden="true">
-                  <div className="w-4 sm:w-16 h-0.5 bg-slate-300" />
+                  <div className="w-4 sm:w-12 md:w-16 h-0.5 bg-slate-300" />
                 </li>
               )}
             </React.Fragment>

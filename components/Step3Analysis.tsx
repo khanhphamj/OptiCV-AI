@@ -86,6 +86,14 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
 
   useEffect(() => {
     const applyEqualHeights = () => {
+      // Only force equal heights on xl and above to avoid tall panels on mobile/tablet
+      if (window.innerWidth < 1280) {
+        if (rightRef.current) {
+          rightRef.current.style.height = '';
+          rightRef.current.style.maxHeight = '';
+        }
+        return;
+      }
       if (!leftRef.current || !rightRef.current) return;
       const leftHeight = leftRef.current.getBoundingClientRect().height;
       rightRef.current.style.height = `${leftHeight}px`;
@@ -135,12 +143,12 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
 
   return (
     <div id="step3-section" className="animate__animated animate__fadeInUp animate__fast">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-2 sm:px-3">
         <div className="relative">
           {isAnalyzing && <SimpleLoader />}
           
           {/* Compact Responsive Layout */}
-          <div className="flex flex-col xl:grid xl:grid-cols-[35%_65%] xl:grid-rows-1 xl:items-stretch gap-2 sm:gap-3 lg:gap-4 xl:gap-5">
+          <div className="flex flex-col xl:grid xl:grid-cols-[36%_64%] xl:grid-rows-1 xl:items-stretch gap-2 sm:gap-3 lg:gap-4 xl:gap-5">
           {/* Scores Section - Compact sizing */}
           <div ref={leftRef} className="xl:col-span-1 flex flex-col space-y-2 sm:space-y-2.5 lg:space-y-3">
             {/* Main Score Card - Compact padding */}
@@ -157,7 +165,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
           </div>
           
           {/* CV Coach Section - Compact responsive behavior */}
-          <div className="xl:col-span-1 flex min-h-[500px] xl:min-h-0">
+          <div className="xl:col-span-1 flex min-h-[380px] sm:min-h-[420px] md:min-h-[460px] xl:min-h-0">
             <div ref={rightRef} className="w-full h-full bg-gradient-to-br from-white via-white to-teal-50/30 rounded-lg sm:rounded-xl lg:rounded-2xl shadow-xl shadow-teal-500/10 border border-teal-100/50 overflow-hidden">
               <CVCoachPanel
                 analysisResult={result}
