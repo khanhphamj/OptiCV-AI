@@ -314,8 +314,8 @@ export default function App() {
     <div className="min-h-screen font-sans flex flex-col bg-slate-100">
       <Header />
       
-      <div id="step-indicator" className="relative z-20 -mt-12 sm:-mt-14 lg:-mt-16">
-        <div className="max-w-5xl mx-auto py-1.5 sm:py-2.5 lg:py-4 px-2.5 sm:px-4 lg:px-6">
+      <div id="step-indicator" className="relative z-20 -mt-16">
+        <div className="max-w-5xl mx-auto py-2 sm:py-3 lg:py-4 px-3 sm:px-4 lg:px-6">
             <StepIndicator steps={STEPS} currentStep={currentStep} />
         </div>
       </div>

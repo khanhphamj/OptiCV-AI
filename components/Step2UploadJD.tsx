@@ -53,12 +53,12 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
       <div className="mt-3 sm:mt-5 md:mt-6 space-y-3 sm:space-y-4">
         <div className="bg-slate-100 border border-slate-200/80 rounded-xl p-3 sm:p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-3">
                   <div className="bg-emerald-100 p-2 rounded-full">
                       <HiCheck className="h-5 w-5 text-emerald-600" />
                   </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-gray-800 truncate">CV: <span className="font-normal">{cvFileName}</span></p>
+                  <div>
+                      <p className="font-semibold text-gray-800">CV: <span className="font-normal truncate">{cvFileName}</span></p>
                   </div>
               </div>
               <button onClick={onBack} className="text-sm font-semibold text-emerald-700 hover:text-emerald-600 transition-colors">Change CV</button>
