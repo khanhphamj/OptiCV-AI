@@ -281,7 +281,7 @@ ${jdText}
       responseFormat: { type: "json_schema", json_schema: { name: "analysis_result", schema: analysisSchema } }
     });
 
-    const response = await withTimeout(apiCall, 60000);
+    const response = await withTimeout(apiCall, 200000);
     const result = JSON.parse(response.choices[0].message.content);
     return result as AnalysisResult;
 
@@ -319,7 +319,7 @@ ${jdText}
             responseFormat: { type: "json_schema", json_schema: { name: "structured_jd", schema: structuredJdSchema } }
         });
         
-        const response = await withTimeout(apiCall, 60000);
+        const response = await withTimeout(apiCall, 200000);
         const result = JSON.parse(response.choices[0].message.content);
         return result as StructuredJd;
     } catch (error) {
