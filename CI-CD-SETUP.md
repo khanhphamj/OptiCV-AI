@@ -1,130 +1,45 @@
 # CI/CD Setup Guide
 
-## 🚀 GitHub Actions CI/CD Pipeline
+GitHub Actions workflows for the monorepo.
 
-Dự án đã được cấu hình với GitHub Actions để tự động build, test và deploy.
+## Workflows
 
-### 📁 Workflows đã tạo:
-
-#### 1. **`ci-cd.yml`** - Main CI/CD Pipeline
-- **Trigger**: Push to master/main branch
+### `ci-cd.yml` — main pipeline
+- **Trigger**: push to `master`/`main`.
 - **Jobs**:
-  - ✅ Build & Test (Node 18.x, 20.x)
-  - ✅ Deploy to Vercel (Production)
-  - ✅ Lighthouse Performance Testing
+  - Build the frontend on Node 18.x and 20.x.
+  - (Optional) Build/test the Python backend.
+  - Deploy the frontend to Vercel.
+  - Run Lighthouse against the deployed URL.
 
-#### 2. **`preview.yml`** - Preview Deployments  
-- **Trigger**: Pull Requests
-- **Jobs**:
-  - ✅ Build application
-  - ✅ Deploy preview to Vercel
-  - ✅ Comment PR with preview URL
+### `preview.yml` — PR previews
+- **Trigger**: pull requests targeting `master`/`main`.
+- **Jobs**: build frontend, deploy Vercel preview, comment the URL on the PR.
 
-### 🔐 GitHub Secrets cần thiết:
+### `test-secrets.yml` — manual secret audit
+- **Trigger**: `workflow_dispatch`.
+- Checks that the Vercel secrets are present. **Does not echo any values.**
 
-Trong GitHub repository settings > Secrets and variables > Actions, thêm:
+## GitHub Secrets
+
+| Secret                  | Used by                 | Notes                                    |
+| ----------------------- | ----------------------- | ---------------------------------------- |
+| `VERCEL_TOKEN`          | ci-cd, preview          | Vercel Dashboard → Settings → Tokens     |
+| `VERCEL_ORG_ID`         | ci-cd, preview          | From `.vercel/project.json`              |
+| `VERCEL_PROJECT_ID`     | ci-cd, preview          | From `.vercel/project.json`              |
+| `LHCI_GITHUB_APP_TOKEN` | ci-cd (Lighthouse)      | Optional                                 |
+
+**Do not put `OPENAI_API_KEY` in GitHub Secrets for the frontend build.** The key belongs only in the backend's runtime environment (Render/Railway/Fly/Vercel Python). Frontend builds must not have access to it.
+
+## Backend deployment (separate)
+
+The Python backend is not deployed by these workflows. Deploy it to your chosen Python host and configure `OPENAI_API_KEY` there. The only variable the frontend needs at build time is `VITE_API_BASE_URL` (the backend's public URL).
+
+## Getting Vercel IDs
 
 ```bash
-# Required Secrets
-GEMINI_API_KEY=your_gemini_api_key
-VERCEL_TOKEN=your_vercel_token
-VERCEL_ORG_ID=your_vercel_org_id
-VERCEL_PROJECT_ID=your_vercel_project_id
-
-# Optional (for Lighthouse CI)
-LHCI_GITHUB_APP_TOKEN=your_lighthouse_token
-```
-
-### 📋 Cách lấy Vercel credentials:
-
-#### 1. **VERCEL_TOKEN**:
-```bash
-# Install Vercel CLI
 npm i -g vercel
-
-# Login and get token
-vercel login
-vercel --help
-```
-Hoặc tạo token tại: [Vercel Dashboard > Settings > Tokens](https://vercel.com/account/tokens)
-
-#### 2. **VERCEL_ORG_ID & VERCEL_PROJECT_ID**:
-```bash
-# Link project to Vercel
-vercel link
-
-# Check .vercel/project.json for IDs
+cd frontend
+vercel link            # writes .vercel/project.json
 cat .vercel/project.json
 ```
-
-### 🛠️ Manual Setup Steps:
-
-1. **Push workflows lên GitHub**:
-```bash
-git add .github/
-git commit -m "Add CI/CD workflows"
-git push origin master
-```
-
-2. **Setup GitHub Secrets**:
-- Go to repository Settings > Secrets and variables > Actions
-- Add all required secrets
-
-3. **Link Vercel Project**:
-```bash
-vercel link
-```
-
-4. **Test Pipeline**:
-- Make a small change and push
-- Check Actions tab in GitHub
-- Verify deployment in Vercel dashboard
-
-### 🔄 Workflow Features:
-
-#### **Automatic Triggers**:
-- ✅ **Push to master/main**: Full CI/CD pipeline
-- ✅ **Pull Requests**: Preview deployments
-- ✅ **Matrix builds**: Test on multiple Node versions
-
-#### **Quality Gates**:
-- ✅ **Build success**: Must pass before deploy
-- ✅ **Performance testing**: Lighthouse CI
-- ✅ **Environment validation**: Check API keys
-
-#### **Deployment Strategy**:
-- ✅ **Production**: Auto-deploy from master/main
-- ✅ **Preview**: Auto-deploy from PRs
-- ✅ **Rollback**: Manual via Vercel dashboard
-
-### 🐛 Troubleshooting:
-
-#### **Build Fails**:
-```bash
-# Check dependencies
-npm ci
-npm run build
-```
-
-#### **Deploy Fails**:
-- Verify Vercel tokens in GitHub Secrets
-- Check Vercel project is linked correctly
-- Ensure environment variables are set
-
-#### **Performance Tests Fail**:
-- Adjust Lighthouse thresholds in `lighthouserc.js`
-- Check if site is accessible
-
-### 📊 Monitoring:
-
-- **GitHub Actions**: Repository > Actions tab
-- **Vercel Deployments**: [Vercel Dashboard](https://vercel.com/dashboard)
-- **Performance**: Lighthouse CI reports in Actions
-
-### 🎯 Next Steps:
-
-1. Push workflows to GitHub
-2. Setup GitHub Secrets  
-3. Link Vercel project
-4. Test first deployment
-5. Monitor and optimize

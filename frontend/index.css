@@ -1,0 +1,998 @@
+/* Global styles for the AI-Powered CV Optimizer */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+/* App shell background — blurred + softened custom image */
+.app-bg {
+  position: relative;
+  isolation: isolate;               /* scope ::before/::after z-index locally */
+  background-color: #f1f5f9;        /* fallback before image loads */
+}
+/* Blurred image layer (behind all content within .app-bg) */
+.app-bg::before {
+  content: '';
+  position: fixed;
+  inset: -24px;                      /* expand so blur edges don't reveal color */
+  z-index: -2;
+  background-image: url('/background/opticv-background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(14px) brightness(1.04) saturate(1.05);
+  pointer-events: none;
+}
+/* White softening wash on top of the blurred image — strong enough for readability */
+.app-bg::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.80) 0%,
+      rgba(255, 255, 255, 0.72) 50%,
+      rgba(255, 255, 255, 0.82) 100%
+    );
+  pointer-events: none;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Professional scrollbar for chat */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-slate-300::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 6px;
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.hover\:scrollbar-thumb-slate-400:hover::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+}
+
+/* Smooth scroll behavior */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Animation improvements */
+.animate__animated {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+.animate__fast {
+  animation-duration: 0.3s;
+}
+
+/* Enhanced Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid #059669; /* emerald-600 */
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ensure minimum contrast ratios */
+.text-gray-500 {
+  color: #6b7280 !important; /* Improved contrast */
+}
+
+.text-gray-400 {
+  color: #9ca3af !important; /* Better visibility */
+}
+
+/* Typography accessibility */
+.text-xs-consistent,
+.text-sm-consistent,
+.text-base-consistent {
+  font-weight: 400; /* Ensure readability */
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .chat-message,
+  .chat-message-user,
+  .chat-message-agent {
+    font-weight: 500;
+  }
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 2px solid #f3f4f6;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- App-wide polish animations --- */
+
+/* Soft entrance: fade + slide up */
+@keyframes soft-rise {
+  0%   { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-soft-rise {
+  animation: soft-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Reveal (for the generated letter block) */
+@keyframes reveal-scale {
+  0%   { opacity: 0; transform: scale(0.985) translateY(6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-reveal {
+  animation: reveal-scale 0.45s ease-out both;
+}
+
+/* Sheen across a button while loading or on hover */
+@keyframes button-sheen {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(220%); }
+}
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  z-index: 1;
+  pointer-events: none;
+}
+.btn-sheen:hover::after,
+.btn-sheen.is-loading::after {
+  animation: button-sheen 1.4s linear infinite;
+}
+
+/* Subtle glow used on primary CTAs */
+@keyframes cta-glow {
+  0%, 100% { box-shadow: 0 10px 24px -12px rgba(5, 150, 105, 0.55); }
+  50%      { box-shadow: 0 14px 30px -10px rgba(13, 148, 136, 0.65); }
+}
+.cta-glow {
+  animation: cta-glow 3.2s ease-in-out infinite;
+}
+
+/* Gradient shift for headline accents */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.text-gradient-emerald {
+  background: linear-gradient(90deg, #059669, #0d9488, #059669);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+/* Icon float (for subtle liveliness on small icons) */
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}
+.icon-float {
+  animation: icon-float 2.8s ease-in-out infinite;
+}
+
+/* Prefer-reduced-motion guard */
+@media (prefers-reduced-motion: reduce) {
+  .animate-soft-rise,
+  .animate-reveal,
+  .btn-sheen::after,
+  .cta-glow,
+  .text-gradient-emerald,
+  .icon-float {
+    animation: none !important;
+  }
+  .btn-sheen::after { display: none; }
+}
+
+/* ============================================================
+   Liquid Glass — Apple iOS/macOS 26 (WWDC 25) reference
+   ------------------------------------------------------------
+   Composition:
+   (1) Base tinted surface with diagonal gradient
+   (2) Backdrop blur + saturation + brightness boost
+   (3) ::before = specular highlight (bright diagonal band)
+   (4) ::after  = rim light + animated shimmer
+   (5) Outer shadow for lift, inner highlights for thickness
+
+   Nested rounded corners should be CONCENTRIC: child radius =
+   parent radius − padding. e.g. parent rounded-2xl (16px),
+   padding 12px → child rounded-[4px].
+   ============================================================ */
+.liquid-glass,
+.liquid-glass-soft,
+.liquid-glass-tinted,
+.liquid-glass-clear {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Highlight + rim layers shared by all variants */
+.liquid-glass::before,
+.liquid-glass-soft::before,
+.liquid-glass-tinted::before,
+.liquid-glass-clear::before,
+.liquid-glass::after,
+.liquid-glass-soft::after,
+.liquid-glass-tinted::after,
+.liquid-glass-clear::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Specular highlight band — light falling from upper-left */
+.liquid-glass::before,
+.liquid-glass-soft::before,
+.liquid-glass-tinted::before,
+.liquid-glass-clear::before {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.12) 22%,
+      rgba(255, 255, 255, 0) 45%,
+      rgba(255, 255, 255, 0) 70%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+  mix-blend-mode: screen;
+  z-index: 0;
+}
+
+/* Slow shimmer — light catching the surface */
+.liquid-glass::after,
+.liquid-glass-clear::after {
+  background:
+    linear-gradient(
+      115deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 60%
+    );
+  transform: translateX(-100%);
+  animation: glass-shimmer 9s ease-in-out infinite;
+  z-index: 0;
+}
+@keyframes glass-shimmer {
+  0%, 40%  { transform: translateX(-100%); opacity: 0; }
+  55%      { opacity: 1; }
+  90%, 100% { transform: translateX(100%); opacity: 0; }
+}
+
+/* Ensure real content sits above highlights */
+.liquid-glass > *,
+.liquid-glass-soft > *,
+.liquid-glass-tinted > *,
+.liquid-glass-clear > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Regular liquid glass (tinted, frosted) --- */
+.liquid-glass {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.46),
+      rgba(255, 255, 255, 0.22) 45%,
+      rgba(255, 255, 255, 0.14) 58%,
+      rgba(255, 255, 255, 0.40)
+    );
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.50);
+  box-shadow:
+    /* Asymmetric rim: brighter top-left, dimmer bottom-right */
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 1px 0 0 rgba(255, 255, 255, 0.40),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.06),
+    inset -1px 0 0 rgba(15, 23, 42, 0.04),
+    /* Internal depth shadow suggesting thickness */
+    inset 0 0 24px rgba(255, 255, 255, 0.10),
+    /* Elevation */
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 12px 40px -12px rgba(15, 23, 42, 0.22);
+}
+
+/* --- Soft: opaque, for content-heavy cards --- */
+.liquid-glass-soft {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(255, 255, 255, 0.56) 50%,
+      rgba(255, 255, 255, 0.70)
+    );
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.05),
+    0 6px 18px -6px rgba(15, 23, 42, 0.10);
+}
+
+/* --- Tinted: for use over gradient/colored backgrounds --- */
+.liquid-glass-tinted {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.24),
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.18)
+    );
+  backdrop-filter: blur(18px) saturate(170%) brightness(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(170%) brightness(1.08);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+    0 10px 28px -10px rgba(15, 23, 42, 0.28);
+}
+
+/* --- Clear: minimal blur, strong rim — for overlays on busy content --- */
+.liquid-glass-clear {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.06) 55%,
+      rgba(255, 255, 255, 0.14)
+    );
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 12px 36px -12px rgba(15, 23, 42, 0.30);
+}
+
+/* --- Interactive glass button (morphy press) --- */
+.liquid-glass-button {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.42),
+      rgba(255, 255, 255, 0.16) 55%,
+      rgba(255, 255, 255, 0.32)
+    );
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.06),
+    0 4px 14px -4px rgba(15, 23, 42, 0.18);
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 180ms ease-out;
+}
+.liquid-glass-button:hover {
+  transform: translateY(-1px) scale(1.015);
+  filter: brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.08),
+    0 10px 26px -8px rgba(15, 23, 42, 0.26);
+}
+.liquid-glass-button:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 80ms;
+  filter: brightness(0.98);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass,
+  .liquid-glass-soft,
+  .liquid-glass-tinted,
+  .liquid-glass-clear,
+  .liquid-glass-button {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .liquid-glass,
+  .liquid-glass-soft { background: rgba(255, 255, 255, 0.96); }
+  .liquid-glass-tinted,
+  .liquid-glass-clear { background: rgba(255, 255, 255, 0.18); }
+  .liquid-glass::after,
+  .liquid-glass-clear::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass::after,
+  .liquid-glass-clear::after { animation: none; }
+}
+
+/* ============================================================
+   Aurora Header — animated mesh gradient + orbs + grain
+   ============================================================ */
+.aurora-bg {
+  position: relative;
+  background:
+    linear-gradient(
+      130deg,
+      #059669 0%,
+      #0d9488 18%,
+      #0891b2 36%,
+      #0ea5e9 54%,
+      #14b8a6 72%,
+      #059669 100%
+    );
+  background-size: 300% 300%;
+  animation: aurora-shift 22s ease-in-out infinite;
+  overflow: hidden;
+}
+@keyframes aurora-shift {
+  0%   { background-position: 0% 50%; }
+  25%  { background-position: 100% 20%; }
+  50%  { background-position: 80% 100%; }
+  75%  { background-position: 20% 80%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating color orbs layered inside the header */
+.aurora-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  will-change: transform;
+}
+.aurora-orb.orb-a {
+  width: 30vw; height: 30vw;
+  top: -8vw; left: -6vw;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.55), transparent 70%);
+  animation: orb-float-a 18s ease-in-out infinite;
+}
+.aurora-orb.orb-b {
+  width: 32vw; height: 32vw;
+  top: -4vw; right: -8vw;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.50), transparent 70%);
+  animation: orb-float-b 24s ease-in-out infinite;
+}
+.aurora-orb.orb-c {
+  width: 26vw; height: 26vw;
+  bottom: -10vw; left: 30%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.45), transparent 70%);
+  animation: orb-float-c 30s ease-in-out infinite;
+}
+/* --px and --py are set by Header's mousemove handler (range ≈ -0.5 .. 0.5).
+   Each orb uses a different parallax magnitude → fake depth (far/mid/near). */
+@keyframes orb-float-a {
+  0%, 100% { transform: translate(calc(var(--px, 0) * 18px), calc(var(--py, 0) * 14px)) scale(1); }
+  50%      { transform: translate(calc(6vw + var(--px, 0) * 18px), calc(4vw + var(--py, 0) * 14px)) scale(1.1); }
+}
+@keyframes orb-float-b {
+  0%, 100% { transform: translate(calc(var(--px, 0) * 28px), calc(var(--py, 0) * 20px)) scale(1); }
+  50%      { transform: translate(calc(-5vw + var(--px, 0) * 28px), calc(3vw + var(--py, 0) * 20px)) scale(0.92); }
+}
+@keyframes orb-float-c {
+  0%, 100% { transform: translate(calc(var(--px, 0) * 42px), calc(var(--py, 0) * 32px)) scale(1); }
+  50%      { transform: translate(calc(-4vw + var(--px, 0) * 42px), calc(-6vw + var(--py, 0) * 32px)) scale(1.08); }
+}
+
+/* Fine grain noise texture (data-URI SVG) */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 200px 200px;
+  /* subtle parallax on the grain — tiny shift gives depth */
+  transform: translate(calc(var(--px, 0) * 6px), calc(var(--py, 0) * 5px));
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Ice-gradient title text with slow shine */
+.text-gradient-ice {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #ecfeff 25%,
+    #ffffff 50%,
+    #a7f3d0 75%,
+    #ffffff 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 8s ease-in-out infinite;
+}
+
+/* Live-status dot pulse */
+.status-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+  animation: status-pulse 2.2s ease-out infinite;
+}
+@keyframes status-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.75); }
+  70%  { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-bg { animation: none; }
+  .aurora-orb { animation: none !important; }
+  .status-dot { animation: none; }
+}
+
+/* Logo hover — gentle gradient speed-up only */
+.logo-group:hover .text-gradient-ice {
+  animation-duration: 4s;
+}
+
+/* 3D tilt wrapper — reacts to --px, --py set by Header cursor tracking */
+.logo-tilt {
+  transform:
+    perspective(700px)
+    rotateY(calc(var(--px, 0) * 10deg))
+    rotateX(calc(var(--py, 0) * -8deg));
+  transform-style: preserve-3d;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-tilt { transform: none !important; }
+}
+
+/* Step indicator — liquid transitions */
+@keyframes step-sheen {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  30%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+@keyframes step-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes step-flow-shine {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+/* ==========================================================
+   CoachIcon — "Lumen Sweep"
+   A conic light beam sweeps around the emerald core, trailed by
+   a softer secondary beam. Star breathes subtly in the center.
+   ========================================================== */
+
+/* ---------- Idle ---------- */
+.coach-icon__halo-idle { opacity: 0.32; transform: scale(1); }
+
+.coach-icon__star-idle {
+  animation: coach-star-idle 4s ease-in-out infinite;
+}
+@keyframes coach-star-idle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50%      { transform: rotate(2deg) scale(1.02); }
+}
+
+/* ---------- Thinking ---------- */
+.coach-icon__halo-thinking {
+  animation: coach-halo-pulse 3.5s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes coach-halo-pulse {
+  0%, 100% { opacity: 0.38; transform: scale(1); }
+  50%      { opacity: 0.68; transform: scale(1.08); }
+}
+
+/* Core: slow iridescent hue drift */
+.coach-icon__core-thinking {
+  animation: coach-core-shift 7s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes coach-core-shift {
+  0%, 100% { filter: hue-rotate(0deg) saturate(1); }
+  50%      { filter: hue-rotate(-8deg) saturate(1.1); }
+}
+
+/* Primary sweep beam — constant linear rotation */
+.coach-icon__sweep {
+  animation: coach-sweep-spin 2.8s linear infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+/* Secondary trail beam — same period, slightly offset, softer */
+.coach-icon__sweep-trail {
+  animation: coach-sweep-spin 2.8s linear infinite;
+  animation-delay: -0.35s;
+  transform-origin: center;
+  will-change: transform;
+}
+@keyframes coach-sweep-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Star: pure subtle breath — no rotation to compete with the sweep */
+.coach-icon__star-thinking {
+  animation: coach-star-breath 2.8s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes coach-star-breath {
+  0%, 100% { transform: scale(1);    opacity: 0.96; }
+  50%      { transform: scale(1.04); opacity: 1;    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coach-icon__halo-thinking,
+  .coach-icon__core-thinking,
+  .coach-icon__star-idle,
+  .coach-icon__star-thinking,
+  .coach-icon__sweep,
+  .coach-icon__sweep-trail { animation: none !important; }
+}
+@keyframes step-bounce {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes step-check {
+  0%   { transform: scale(0) rotate(-45deg); opacity: 0; }
+  60%  { transform: scale(1.2) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*='step-sheen'],
+  [class*='step-flow'],
+  [class*='step-bounce'],
+  [class*='step-check'] { animation: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-group:hover,
+  .logo-group:hover * {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Ambient color blobs — give the glass something to refract against */
+.ambient-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ambient-blobs::before,
+.ambient-blobs::after {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.ambient-blobs::before {
+  left: -18vmax;
+  top: -12vmax;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.40), transparent 60%);
+  animation: blob-float-1 24s ease-in-out infinite;
+}
+.ambient-blobs::after {
+  right: -16vmax;
+  bottom: -18vmax;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.32), transparent 60%);
+  animation: blob-float-2 30s ease-in-out infinite;
+}
+
+/* Third accent blob — mid-right */
+.ambient-blobs > .blob-accent {
+  position: absolute;
+  width: 42vmax;
+  height: 42vmax;
+  right: 10vmax;
+  top: 22vh;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.35;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.22), transparent 60%);
+  animation: blob-float-3 34s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes blob-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6vmax, 4vmax) scale(1.08); }
+}
+@keyframes blob-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-5vmax, -3vmax) scale(0.94); }
+}
+@keyframes blob-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-4vmax, 6vmax) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-blobs::before,
+  .ambient-blobs::after,
+  .ambient-blobs > .blob-accent {
+    animation: none;
+  }
+}
+
+/* Consistent prose styles for JD Preview */
+.prose h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem; /* 16px - consistent with text-lg */
+  font-weight: 700;
+  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.25rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h2:first-child {
+  margin-top: 0;
+}
+
+.prose h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.875rem; /* 14px - consistent with text-sm */
+  font-weight: 600;
+  color: #334155;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.prose p, .prose li {
+  font-size: 0.875rem; /* 14px - consistent with base text */
+  line-height: 1.5;
+  color: #475569;
+}
+
+.prose p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.prose ul, .prose ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  padding-left: 1rem;
+}
+
+.prose li {
+  margin-top: 0.125rem;
+}
+
+.prose strong {
+  color: #334155;
+  font-weight: 600;
+}
+
+.prose a {
+  color: #059669; /* emerald-600 */
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.prose a:hover {
+  color: #047857; /* emerald-700 */
+  text-decoration: underline;
+}
+
+.prose blockquote {
+  font-style: italic;
+  color: #475569; /* slate-600 */
+  border-left: 0.25rem solid #cbd5e1; /* slate-300 */
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
+/* Utility: line clamp (fallback if Tailwind plugin not present) */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@media (min-width: 1024px) {
+  .lg\:line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+@media (min-width: 1280px) {
+  .xl\:line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Typography System - Professional & Consistent */
+.text-xs-consistent {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.4;
+}
+
+.text-sm-consistent {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+}
+
+.text-base-consistent {
+  font-size: 0.875rem; /* 14px - consistent with compact design */
+  line-height: 1.5;
+}
+
+.text-lg-consistent {
+  font-size: 1rem; /* 16px */
+  line-height: 1.6;
+}
+
+.text-xl-consistent {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.6;
+}
+
+.text-2xl-consistent {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.5;
+}
+
+/* Chat-specific typography */
+.chat-message {
+  font-size: 0.875rem; /* 14px - consistent with UI */
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.chat-message-user {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.chat-message-agent {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Responsive utilities for better zoom compatibility */
+@media (max-width: 1536px) and (min-width: 1280px) {
+  /* 2xl breakpoint adjustments for zoom 100% */
+  .responsive-container {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1280px) and (min-width: 1024px) {
+  /* xl breakpoint adjustments for zoom 100% */
+  .responsive-container {
+    max-width: 1000px;
+  }
+}
+
+/* Improved text scaling for different zoom levels */
+.responsive-text-sm {
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+}
+
+.responsive-text-base {
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+}
+
+.responsive-text-lg {
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+}
+
+/* Improved spacing for different zoom levels */
+.responsive-spacing-sm {
+  padding: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.responsive-spacing-md {
+  padding: clamp(0.75rem, 2vw, 1rem);
+}
+
+.responsive-spacing-lg {
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+}
