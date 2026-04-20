@@ -1,13 +1,10 @@
 import { AnalysisResult, ValidationResult, StructuredJd, ChatMessage } from '../types';
 import { CV_ANALYSIS_MODEL } from '../constants';
 
-// OpenAI API configuration
+// API configuration
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.API_KEY;
-if (!OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY environment variable not set.");
-}
-
 const OPENAI_BASE_URL = 'https://api.openai.com/v1';
+const OPENAI_PROXY_PATH = process.env.OPENAI_PROXY_PATH || '/api/openai';
 
 // Timeout wrapper function
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
@@ -47,14 +44,32 @@ async function makeOpenAIRequest(messages: any[], options: {
     requestBody.response_format = responseFormat;
   }
 
-  const response = await fetch(`${OPENAI_BASE_URL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestBody),
-  });
+  // In production, use server-side proxy to avoid browser CORS failures and key exposure.
+  const shouldUseProxy = !import.meta.env.DEV || !OPENAI_API_KEY;
+  const endpoint = shouldUseProxy ? OPENAI_PROXY_PATH : `${OPENAI_BASE_URL}/chat/completions`;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (!shouldUseProxy) {
+    headers.Authorization = `Bearer ${OPENAI_API_KEY}`;
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(requestBody),
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        'Network request failed while contacting OpenAI. If you are running from browser/Safari, deploy with /api/openai proxy enabled (or run `vercel dev` locally).'
+      );
+    }
+    throw error;
+  }
 
   if (!response.ok) {
     const errorText = await response.text();

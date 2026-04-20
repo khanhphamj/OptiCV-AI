@@ -17,6 +17,10 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+
+# Windows NTFS Zone.Identifier (metadata "Mark of the Web"; often *:Zone.Identifier)
+*Zone.Identifier
+
 *.suo
 *.ntvs*
 *.njsproj
