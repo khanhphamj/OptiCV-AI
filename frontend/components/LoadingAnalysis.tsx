@@ -5,8 +5,10 @@ import { HiSparkles, HiCheckCircle } from 'react-icons/hi2';
 import { useLang } from '../hooks/useLang';
 import type { TranslationKey } from '../i18n/translations';
 
+export type LoadingStage = 'validation' | 'analysis' | 'complete' | 'job_search' | 'job_matching';
+
 interface LoadingAnalysisProps {
-  stage: 'validation' | 'analysis' | 'complete';
+  stage: LoadingStage;
   onCancel: () => void;
   onComplete: () => void;
 }
@@ -30,11 +32,29 @@ const ANALYSIS_KEYS: TranslationKey[] = [
   'loading.analysis.8',
 ];
 
+const JOB_SEARCH_KEYS: TranslationKey[] = [
+  'loading.job_search.1',
+  'loading.job_search.2',
+  'loading.job_search.3',
+  'loading.job_search.4',
+];
+
+const JOB_MATCHING_KEYS: TranslationKey[] = [
+  'loading.job_matching.1',
+  'loading.job_matching.2',
+  'loading.job_matching.3',
+  'loading.job_matching.4',
+];
+
 const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onComplete }) => {
   const { t } = useLang();
 
   const steps = useMemo(() => {
-    const keys = stage === 'validation' ? VALIDATION_KEYS : ANALYSIS_KEYS;
+    const keys =
+      stage === 'validation' ? VALIDATION_KEYS :
+      stage === 'job_search' ? JOB_SEARCH_KEYS :
+      stage === 'job_matching' ? JOB_MATCHING_KEYS :
+      ANALYSIS_KEYS;
     return keys.map((k) => t(k));
   }, [stage, t]);
 
@@ -50,12 +70,20 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
     ? t('loading.title.complete')
     : stage === 'validation'
     ? t('loading.title.validation')
+    : stage === 'job_search'
+    ? t('loading.title.job_search')
+    : stage === 'job_matching'
+    ? t('loading.title.job_matching')
     : t('loading.title.analysis');
 
   const subtitle = isComplete
     ? t('loading.subtitle.complete')
     : stage === 'validation'
     ? t('loading.subtitle.validation')
+    : stage === 'job_search'
+    ? t('loading.subtitle.job_search')
+    : stage === 'job_matching'
+    ? t('loading.subtitle.job_matching')
     : t('loading.subtitle.analysis');
 
   // Progress: step i out of N → (i+0.5)/N (avoid 0% and 100%)

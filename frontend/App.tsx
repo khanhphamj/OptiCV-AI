@@ -10,7 +10,7 @@ import Step2ReviewProfile from './components/Step2ReviewProfile';
 import Step3JobMatches from './components/Step3JobMatches';
 import Step3Analysis from './components/Step3Analysis';
 import { analyzeCv, validateDocuments, structureJd, parseCvProfile } from './services/openAIService';
-import { searchJobs, matchJobsToCv, buildSearchParams } from './services/jobSearchService';
+import { searchJobs, matchJobsToCv, buildSearchParams, fetchJdContent } from './services/jobSearchService';
 import LoadingAnalysis from './components/LoadingAnalysis';
 import Footer from './components/Footer';
 import ResumeBanner from './components/ResumeBanner';
@@ -185,14 +185,36 @@ export default function App() {
     changeStep(Step.UploadCV);
   };
 
-  const handlePickJob = (match: JobMatch) => {
-    const syntheticJd = `Position: ${match.title}\n${match.company ? `Company: ${match.company}\n` : ''}${match.location ? `Location: ${match.location}\n` : ''}Source: ${match.url}\n\n${match.jd_excerpt}`;
-    setJdText(syntheticJd);
+  const handlePickJob = async (match: JobMatch) => {
     setJdFileName(match.title || 'Job from Tavily search');
     setAnalysisSessions([]);
     setFlowMode('upload-jd');
     try { trackEvent('job_picked', { score: match.match_score, source: match.source }); } catch {}
-    startFullAnalysis(cvText, syntheticJd);
+
+    // Move to Analysis screen immediately with the best content we already have.
+    const headerLines = [
+      `Position: ${match.title}`,
+      match.company ? `Company: ${match.company}` : '',
+      match.location ? `Location: ${match.location}` : '',
+      `Source: ${match.url}`,
+    ].filter(Boolean).join('\n');
+    const initialJd = `${headerLines}\n\n${match.jd_excerpt}`;
+    setJdText(initialJd);
+
+    changeStep(Step.Analysis);
+    setLoadingStage('analysis');
+
+    try {
+      const fetched = await fetchJdContent(match.url, match.jd_excerpt, match.title);
+      const fullJd = `${headerLines}\n\n${fetched.content}`;
+      setJdText(fullJd);
+      // Skip validation here — the JD was already vetted by Tavily + AI matcher.
+      await runActualAnalysis(cvText, fullJd);
+    } catch (e) {
+      console.error(e);
+      // Fall back to the excerpt-only JD without validation.
+      await runActualAnalysis(cvText, initialJd);
+    }
   };
 
   const handleJdUploadAndAnalyze = (text: string, fileName:string) => {

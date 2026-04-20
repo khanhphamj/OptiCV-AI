@@ -12,6 +12,7 @@ import {
 import { JobMatch } from '../types';
 import { useLang } from '../hooks/useLang';
 import type { TranslationKey } from '../i18n/translations';
+import LoadingAnalysis from './LoadingAnalysis';
 
 interface Step3JobMatchesProps {
   matches: JobMatch[];
@@ -48,17 +49,12 @@ const Step3JobMatches: React.FC<Step3JobMatchesProps> = ({
   const { t } = useLang();
 
   if (isLoading) {
-    const isSearching = loadingStage === 'searching';
     return (
-      <div className="w-full max-w-xl mx-auto liquid-glass-soft rounded-3xl p-6 sm:p-8 text-center animate-soft-rise">
-        <HiSparkles className="w-10 h-10 text-emerald-500 mx-auto animate-pulse" />
-        <h2 className="mt-3 text-xl font-bold text-slate-900 font-headline">
-          {isSearching ? t('find_jobs.matches.loading.searching_title') : t('find_jobs.matches.loading.matching_title')}
-        </h2>
-        <p className="mt-2 text-sm text-slate-600">
-          {isSearching ? t('find_jobs.matches.loading.searching_stage') : t('find_jobs.matches.loading.matching_stage')}
-        </p>
-      </div>
+      <LoadingAnalysis
+        stage={loadingStage === 'searching' ? 'job_search' : 'job_matching'}
+        onCancel={onBack}
+        onComplete={() => {}}
+      />
     );
   }
 

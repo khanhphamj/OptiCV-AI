@@ -12,7 +12,6 @@ import {
 } from 'react-icons/hi2';
 import { SAMPLE_CV, SAMPLE_CV_FILENAME } from '../utils/sampleData';
 import { trackEvent } from '../utils/analytics';
-import CoachIcon from './CoachIcon';
 import { useLang } from '../hooks/useLang';
 
 export type Step1Mode = 'upload-jd' | 'find-jobs';
@@ -159,14 +158,11 @@ const Step1UploadCV: React.FC<Step1UploadCVProps> = ({ onUploadSuccess }) => {
           className="pointer-events-none absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-gradient-to-br from-teal-400/30 to-cyan-400/20 blur-2xl"
         />
 
-        <div className="relative z-10 flex items-center gap-3">
-          <CoachIcon className="w-12 h-12 flex-shrink-0" />
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">{t('step1.hero.eyebrow')}</p>
-            <h3 className="text-lg font-bold text-slate-900 font-headline leading-tight">
-              {t('step1.hero.title')}
-            </h3>
-          </div>
+        <div className="relative z-10">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">{t('step1.hero.eyebrow')}</p>
+          <h3 className="text-lg font-bold text-slate-900 font-headline leading-tight">
+            {t('step1.hero.title')}
+          </h3>
         </div>
 
         <ul className="relative z-10 mt-4 space-y-2.5">

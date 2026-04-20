@@ -53,10 +53,15 @@ class TavilyClient:
 
         return response.json()
 
-    async def extract(self, urls: List[str]) -> Dict[str, Any]:
+    async def extract(
+        self,
+        urls: List[str],
+        extract_depth: str = "basic",
+    ) -> Dict[str, Any]:
         body: Dict[str, Any] = {
             "api_key": self._settings.tavily_api_key,
             "urls": urls,
+            "extract_depth": extract_depth,
         }
         timeout = httpx.Timeout(self._settings.tavily_timeout_seconds)
         async with httpx.AsyncClient(timeout=timeout) as client:
