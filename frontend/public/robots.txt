@@ -1,0 +1,8 @@
+# OptiCV AI — Search engine directives
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://opticv-ai.vercel.app/sitemap.xml
