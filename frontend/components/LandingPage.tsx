@@ -12,7 +12,6 @@ import { useLang } from '../hooks/useLang';
 import { TranslationKey } from '../i18n/translations';
 import LandingHeroDemo from './LandingHeroDemo';
 import LivePreview from './LivePreview';
-import BeforeAfterSlider from './BeforeAfterSlider';
 import TiltCard from './TiltCard';
 
 interface LandingPageProps {
@@ -98,9 +97,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             </p>
           </div>
 
-          {/* Visual — animated AI rewrite demo (with 3D tilt + glare) */}
+          {/* Visual — animated AI rewrite demo (with 3D tilt + glare).
+              Visible on all viewports so the Match Score wow-moment lands
+              for mobile users too; on small screens it stacks below the
+              copy thanks to grid-cols-1. */}
           <div
-            className="relative animate-soft-rise hidden md:block"
+            className="relative animate-soft-rise"
             style={{ animationDelay: '160ms' }}
           >
             <LandingHeroDemo />
@@ -110,9 +112,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
       {/* ─── Live AI Preview — interactive demo of skill priority engine ─── */}
       <LivePreview onGetStarted={onGetStarted} />
-
-      {/* ─── Before/After CV slider — drag-to-reveal AI rewrite ─── */}
-      <BeforeAfterSlider />
 
       {/* ─── Features ─── */}
       <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
