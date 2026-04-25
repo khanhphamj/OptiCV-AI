@@ -4,7 +4,11 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "echo 'Skipping root install'",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://opticv-ai-backend.vercel.app/api/$1" },
+    {
+      "source": "/api/(.*)",
+      "missing": [{ "type": "host", "value": "opticv-ai-backend.vercel.app" }],
+      "destination": "https://opticv-ai-backend.vercel.app/api/$1"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
