@@ -1,6 +1,6 @@
 import React from 'react';
 import { SubScores } from '../types';
-import { HiStar, HiKey, HiBriefcase, HiWrenchScrewdriver, HiChartBar } from 'react-icons/hi2';
+import { HiStar, HiKey, HiBriefcase, HiWrenchScrewdriver, HiChartBar, HiIdentification, HiClock } from 'react-icons/hi2';
 import { useLang } from '../hooks/useLang';
 import type { TranslationKey } from '../i18n/translations';
 
@@ -14,11 +14,15 @@ interface MetricConfig {
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
+// Order matches how a real HR scans: title-fit → required skills → experience
+// → recency → impact → keywords. Top of the list = highest decision weight.
 const METRICS_CONFIG: MetricConfig[] = [
-    { id: 'keyword_match',  labelKey: 'metric.keyword_match',  icon: HiKey },
-    { id: 'experience_fit', labelKey: 'metric.experience_fit', icon: HiBriefcase },
+    { id: 'role_alignment', labelKey: 'metric.role_alignment', icon: HiIdentification },
     { id: 'skill_coverage', labelKey: 'metric.skill_coverage', icon: HiWrenchScrewdriver },
+    { id: 'experience_fit', labelKey: 'metric.experience_fit', icon: HiBriefcase },
+    { id: 'recency',        labelKey: 'metric.recency',        icon: HiClock },
     { id: 'quantification', labelKey: 'metric.quantification', icon: HiChartBar },
+    { id: 'keyword_match',  labelKey: 'metric.keyword_match',  icon: HiKey },
 ];
 
 const getScoreStyling = (score: number) => {

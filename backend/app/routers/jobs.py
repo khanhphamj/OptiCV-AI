@@ -28,6 +28,31 @@ LOCATION_LABEL: Dict[Location, str] = {
     "ha_noi": "Hà Nội",
 }
 
+# Aliases used to verify that a JD's declared location matches the user's pick.
+# Kept specific to avoid false positives (e.g. bare "hcm" could collide).
+_LOCATION_ALIASES: Dict[Location, List[str]] = {
+    "ho_chi_minh": [
+        "hồ chí minh", "ho chi minh", "tp.hcm", "tp. hcm", "tp hcm",
+        "sài gòn", "sai gon", "saigon",
+        "thành phố hồ chí minh",
+    ],
+    "ha_noi": [
+        "hà nội", "ha noi", "hanoi", "tp.hn", "tp. hn",
+        "thành phố hà nội",
+    ],
+}
+
+
+def _location_ok(jd_location: Optional[str], requested: Location) -> bool:
+    """True if the JD's declared city matches the requested one.
+    Unknown/empty location is treated as acceptable — don't drop legit jobs
+    just because the LLM failed to extract a city."""
+    if not jd_location:
+        return True
+    haystack = jd_location.lower()
+    aliases = _LOCATION_ALIASES.get(requested, [])
+    return any(alias in haystack for alias in aliases)
+
 # URL patterns that identify an individual job posting (detail page).
 # Each pattern must uniquely identify a single-JD page on that domain.
 _DETAIL_URL_PATTERNS: List[re.Pattern[str]] = [
@@ -57,10 +82,12 @@ def _looks_like_listing_title(title: str) -> bool:
 
 
 # Definitive markers that the posting is no longer accepting applications.
-# Must NOT match section labels like "Hết hạn ứng tuyển" (Apply-by button) or
-# "Hết hạn nộp hồ sơ: 31/12/2026" (deadline label), which appear on active pages.
+# Must NOT match generic deadline labels with a date like "Hết hạn nộp hồ sơ: 31/12/2026"
+# which appear on active pages.
 _EXPIRED_RE = re.compile(
-    r"(tin (?:tuyển dụng )?(?:này )?đã hết hạn"
+    # TopCV: "Ứng tuyển lại" button only renders on expired postings (active = "Ứng tuyển")
+    r"(Ứng tuyển lại"
+    r"|tin (?:tuyển dụng )?(?:này )?đã hết hạn"
     r"|tin này đã (?:kết thúc|đóng|bị xoá)"
     r"|bài (?:đăng )?tuyển dụng (?:này )?đã (?:kết thúc|hết hạn|đóng)"
     r"|thông báo tuyển dụng (?:này )?đã hết hạn"
@@ -68,6 +95,9 @@ _EXPIRED_RE = re.compile(
     r"|vị trí (?:này )?đã (?:đóng|tuyển đủ|được tuyển)"
     r"|nhà tuyển dụng đã ngừng nhận hồ sơ"
     r"|tin không còn tồn tại"
+    # CareerViet: "Hết hạn nộp" without a following date OR with date in the past.
+    # We accept the simple "đã quá hạn" / "Tin đã quá hạn" forms.
+    r"|đã quá hạn"
     r"|job (?:has |is )?expired"
     r"|position (?:has been |is )?closed"
     r"|this (?:position|job) is (?:closed|no longer available|no longer accepting)"
@@ -77,8 +107,36 @@ _EXPIRED_RE = re.compile(
 )
 
 
+# Detect deadline date and treat past dates as expired.
+# Patterns like: "Hạn nộp hồ sơ: 31/12/2025", "Hạn nộp: 30-04-2026"
+_DEADLINE_RE = re.compile(
+    r"(?:hạn (?:nộp(?:\s+(?:hồ sơ|đơn))?|ứng tuyển|nhận hồ sơ)|deadline)\s*:?\s*"
+    r"(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})",
+    re.IGNORECASE,
+)
+
+
+def _deadline_passed(content: str) -> bool:
+    from datetime import date
+    today = date.today()
+    for m in _DEADLINE_RE.finditer(content):
+        try:
+            day, month, year = int(m.group(1)), int(m.group(2)), int(m.group(3))
+            if date(year, month, day) < today:
+                return True
+        except ValueError:
+            continue
+    return False
+
+
 def _is_expired(content: str) -> bool:
-    return bool(content and _EXPIRED_RE.search(content))
+    if not content:
+        return False
+    if _EXPIRED_RE.search(content):
+        return True
+    if _deadline_passed(content):
+        return True
+    return False
 
 
 # Markdown noise to strip (nav images, asset URLs, repeated blank lines).
@@ -138,6 +196,7 @@ class JobListingIn(BaseModel):
 class JobMatchRequest(BaseModel):
     cv_text: str = Field(..., min_length=20)
     listings: List[JobListingIn] = Field(..., min_length=1, max_length=20)
+    location: Optional[Location] = None
 
 
 class JobMatchItem(BaseModel):
@@ -168,6 +227,24 @@ class FetchJdResponse(BaseModel):
     extracted: bool
     is_expired: bool = False
     depth: Optional[str] = None
+
+
+class ImportJdRequest(BaseModel):
+    url: str = Field(..., min_length=8)
+
+
+class ImportJdResponse(BaseModel):
+    url: str
+    content: str
+    raw_length: int
+    cleaned_length: int
+    is_expired: bool
+    """Where the final content came from:
+       - "llm-cleaned": Tavily extract → LLM rewrote into a clean JD (preferred)
+       - "tavily-raw":  Tavily extract returned content but LLM cleaning failed
+       - "snippet":     Tavily extract failed; nothing useful to return
+    """
+    source: str
 
 
 def _get_tavily(settings: Settings = Depends(get_settings)) -> TavilyClient:
@@ -415,12 +492,17 @@ async def extract_and_match(
         if not m:
             continue
         url = m.get("url", "")
+        jd_location = m.get("location") or None
+        # If the user asked for a specific city, drop JDs that declare a
+        # different city. Jobs without an extracted location pass through.
+        if req.location and not _location_ok(jd_location, req.location):
+            continue
         matches.append(
             JobMatchItem(
                 url=url,
                 title=m.get("title") or title_by_url.get(url, ""),
                 company=m.get("company") or None,
-                location=m.get("location") or None,
+                location=jd_location,
                 source=_source_from_url(url),
                 match_score=int(m.get("match_score", 0)),
                 match_reasons=m.get("match_reasons", []) or [],
@@ -431,6 +513,150 @@ async def extract_and_match(
 
     matches.sort(key=lambda x: x.match_score, reverse=True)
     return JobMatchResponse(matches=matches)
+
+
+_JD_CLEAN_SYSTEM_PROMPT = (
+    "You are a job-description extractor. The user provides raw text scraped from a "
+    "career/job-posting web page. The raw text contains the actual JD mixed with site "
+    "navigation, headers, footers, related job listings, share-this-job widgets, ads, "
+    "and other boilerplate. Extract ONLY the job description content and return clean "
+    "plain text with these sections, in this order, omitting any section that's missing "
+    "from the source:\n"
+    "\n"
+    "# {Job Title}\n"
+    "Company: {Company}\n"
+    "Location: {Location}\n"
+    "Employment type: {Full-time / Part-time / Contract / Internship — if stated}\n"
+    "\n"
+    "## About the role\n"
+    "{Short overview paragraph}\n"
+    "\n"
+    "## Responsibilities\n"
+    "- bullet\n"
+    "- bullet\n"
+    "\n"
+    "## Requirements\n"
+    "- bullet\n"
+    "\n"
+    "## Nice to have\n"
+    "- bullet\n"
+    "\n"
+    "## Benefits\n"
+    "- bullet\n"
+    "\n"
+    "## How to apply\n"
+    "{If the source mentions a deadline, contact, or application link, include it.}\n"
+    "\n"
+    "Rules:\n"
+    "- Do NOT invent any content. Only include information explicitly present in the source.\n"
+    "- Strip ALL navigation, footer, related-job links, ads, social-share widgets, cookie notices.\n"
+    "- Preserve technical terms, tools, and metrics verbatim.\n"
+    "- Match the source language (Vietnamese stays Vietnamese, English stays English).\n"
+    "- Output 200–2000 words depending on what the source actually contains.\n"
+    "- If the source has almost no JD content (e.g. you only see navigation), output the literal string: NO_JD_CONTENT"
+)
+
+
+async def _clean_jd_with_llm(
+    openai: OpenAIClient,
+    url: str,
+    raw_text: str,
+) -> Optional[str]:
+    """Pass Tavily-extracted raw text through GPT to isolate the JD.
+
+    Returns the cleaned JD on success, or None if the model couldn't find a JD
+    in the page (so the caller can fall back to the raw text).
+    """
+    if not raw_text or len(raw_text) < 200:
+        return None
+
+    user_prompt = (
+        f"Source URL: {url}\n\n"
+        f"Raw extracted page text:\n---\n{raw_text[:20000]}\n---"
+    )
+    payload: Dict[str, Any] = {
+        "messages": [
+            {"role": "system", "content": _JD_CLEAN_SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
+        ],
+        "temperature": 0.1,
+    }
+    try:
+        completion = await openai.chat_completion(payload)
+        content = (completion["choices"][0]["message"]["content"] or "").strip()
+    except (OpenAIError, KeyError, IndexError, ValueError, TypeError):
+        return None
+
+    if not content or content.upper().startswith("NO_JD_CONTENT"):
+        return None
+    return content
+
+
+@router.post("/import-jd", response_model=ImportJdResponse)
+async def import_jd(
+    req: ImportJdRequest,
+    tavily: TavilyClient = Depends(_get_tavily),
+    openai: OpenAIClient = Depends(_get_openai),
+) -> ImportJdResponse:
+    """Import a JD from any public URL.
+
+    Pipeline:
+      1. Tavily extract (advanced → basic fallback)
+      2. Clean obvious noise (images, dedup lines)
+      3. LLM cleaning pass to isolate the JD from boilerplate
+      4. Return whichever produced the best content
+
+    Designed for noisy career pages (e.g. company sites with heavy templates)
+    where Tavily's raw output mixes navigation/footer with the real JD.
+    """
+    raw_text = ""
+    for depth in ("advanced", "basic"):
+        try:
+            raw = await tavily.extract([req.url], extract_depth=depth)
+        except TavilyError as exc:
+            if depth == "basic":
+                raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+            continue
+        for item in raw.get("results", []):
+            text = (item.get("raw_content") or "").strip()
+            if text and len(text) >= 200:
+                raw_text = text
+                break
+        if raw_text:
+            break
+
+    if not raw_text:
+        raise HTTPException(
+            status_code=422,
+            detail="Could not extract any content from this URL. The page may be private, JS-rendered, or blocked by anti-bot protection.",
+        )
+
+    cleaned_noise = _clean_jd_content(raw_text)
+    raw_length = len(cleaned_noise)
+    is_expired = _is_expired(cleaned_noise)
+
+    llm_cleaned = await _clean_jd_with_llm(openai, req.url, cleaned_noise)
+
+    if llm_cleaned and len(llm_cleaned) >= 150:
+        return ImportJdResponse(
+            url=req.url,
+            content=llm_cleaned[:30000],
+            raw_length=raw_length,
+            cleaned_length=len(llm_cleaned),
+            is_expired=is_expired,
+            source="llm-cleaned",
+        )
+
+    # LLM cleaning failed — return the raw cleaned text. Better than nothing,
+    # and the analysis pipeline can still work on it.
+    return ImportJdResponse(
+        url=req.url,
+        content=cleaned_noise[:30000],
+        raw_length=raw_length,
+        cleaned_length=raw_length,
+        is_expired=is_expired,
+        source="tavily-raw",
+    )
 
 
 @router.post("/fetch-jd", response_model=FetchJdResponse)

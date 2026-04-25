@@ -32,7 +32,7 @@ const JDPreviewPanel: React.FC<JDPreviewPanelProps> = ({ structuredJd, jdText, o
   return (
     <div className="h-full w-full flex flex-col">
       {/* Header row */}
-      <div className="shrink-0 flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 border-b border-slate-200/70 bg-white/70 backdrop-blur-sm">
+      <div className="shrink-0 flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 border-b border-slate-200/60 bg-white/40">
         <div className="flex items-center gap-2 min-w-0">
           <div className="p-1.5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg shadow-sm">
             <HiOutlineClipboardDocumentList className="h-4 w-4 text-white" />

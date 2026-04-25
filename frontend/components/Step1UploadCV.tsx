@@ -133,7 +133,7 @@ const Step1UploadCV: React.FC<Step1UploadCVProps> = ({ onUploadSuccess }) => {
               <button
                 type="button"
                 onClick={handleUseSample}
-                className="btn-sheen inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-white/80 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 active:scale-95 transition"
+                className="liquid-glass-button btn-sheen inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-emerald-700"
               >
                 <HiSparkles className="h-4 w-4 text-emerald-500" />
                 {t('step1.sample')}

@@ -46,8 +46,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
               'bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-md shadow-emerald-500/25';
             textState = 'text-slate-700';
           } else {
-            tileState =
-              'bg-white/30 backdrop-blur-md border border-white/55 shadow-sm';
+            tileState = 'liquid-glass-clear';
             circleState = 'bg-slate-200/90 text-slate-500 shadow-sm';
             textState = 'text-slate-500';
           }

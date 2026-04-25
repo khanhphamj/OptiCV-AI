@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+  <link id="favicon" rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI-Powered CV Optimizer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&family=Space+Grotesk:wght@700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <!-- Inter is the web fallback for SF Pro on non-Apple devices. Stylistic
+       alternates ss01 + cv11 are enabled in CSS so it reads more SF-like. -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -53,18 +55,41 @@
 }
 </script>
 <style>
-  body {
-    font-family: 'Inter', sans-serif;
+  /* Apple-style typography stack.
+     - Native SF Pro on Apple devices (no download).
+     - Inter as the web fallback (designed in the SF spirit; ss01/cv11 features
+       enabled make its single-storey 'a' / curl-less 'l' read closer to SF).
+     - Display vs Text variants follow Apple's split: tight tracking on Display.
+     - SF Mono first for code, JetBrains Mono as cross-platform fallback. */
+  :root {
+    --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro",
+      "Inter", "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro",
+      "Inter", "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Monaco,
+      "Cascadia Code", "Liberation Mono", monospace;
+  }
+
+  html, body {
+    font-family: var(--font-system);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   .font-headline {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-display);
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.022em; /* Apple's signature tight display tracking */
   }
   .font-numeric {
-    font-family: 'Space Grotesk', monospace;
+    font-family: var(--font-system);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum", "ss01";
   }
   .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
   }
   
   /* Hide scrollbar for Chrome, Safari and Opera */

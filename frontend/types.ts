@@ -51,10 +51,23 @@ export interface SubScoreDetail {
 }
 
 export interface SubScores {
-  keyword_match: SubScoreDetail;
-  experience_fit: SubScoreDetail;
+  /** How closely the candidate's CURRENT/most recent title and responsibilities
+   *  match the JD title and seniority. The single highest-signal filter HR
+   *  applies in the first 6-10 seconds of scanning. */
+  role_alignment?: SubScoreDetail;
+  /** Required + nice-to-have skills coverage, with recency weighting baked in. */
   skill_coverage: SubScoreDetail;
+  /** Years of experience AND seniority-band fit (junior CV for senior JD scores
+   *  low even if the year count is right). */
+  experience_fit: SubScoreDetail;
+  /** Whether matching skills/experience are recent (≤3 years) or stale (5+ years). */
+  recency?: SubScoreDetail;
+  /** Real quantified impact — scope, scale, business outcome — not just
+   *  "has numbers". A trivial metric still scores low. */
   quantification: SubScoreDetail;
+  /** Lexical overlap with JD keywords. Useful as an ATS proxy but a weaker
+   *  signal of actual fit, so weighted lower than the others. */
+  keyword_match: SubScoreDetail;
 }
 
 export interface AnalysisResult {
@@ -132,9 +145,16 @@ export interface CourseRecommendation {
 export interface ChatMessage {
   role: 'user' | 'agent';
   content: string;
-  suggestion?: AISuggestion;
-  courseRecommendation?: CourseRecommendation;
+  /** Each suggestion renders as its own Approve/Reject card stacked under
+   *  the message bubble. Multiple are emitted when the agent proposes
+   *  several edits in one turn. */
+  suggestions?: AISuggestion[];
+  /** Multiple skill-gap course recommendations may be attached to a single
+   *  message — each renders as its own card. */
+  courseRecommendations?: CourseRecommendation[];
   quickReplies?: string[];
+  /** Optional focus areas — rendered as visual chips below the bubble (welcome message). */
+  tasks?: string[];
   timestamp: Date;
 }
 

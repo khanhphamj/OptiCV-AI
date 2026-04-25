@@ -96,7 +96,7 @@ const CoverLetterPanel: React.FC<CoverLetterPanelProps> = ({ cvText, jdText, emb
 
   const wrapperClass = embedded
     ? 'w-full h-full flex flex-col p-3 sm:p-4 lg:p-5'
-    : 'mt-4 sm:mt-5 lg:mt-6 animate-soft-rise bg-gradient-to-br from-white via-white to-emerald-50/40 rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-5 xl:p-6 shadow-xl shadow-emerald-500/10 border border-emerald-100/60';
+    : 'liquid-glass-soft mt-4 sm:mt-5 lg:mt-6 animate-soft-rise rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-5 xl:p-6';
 
   return (
     <section className={wrapperClass}>
@@ -126,7 +126,7 @@ const CoverLetterPanel: React.FC<CoverLetterPanelProps> = ({ cvText, jdText, emb
             onChange={(e) => setTone(e.target.value as CoverLetterTone)}
             disabled={loading}
             title={t(activeTone.hintKey)}
-            className="rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:bg-gray-100"
+            className="rounded-md border border-slate-300/70 bg-white/85 backdrop-blur-sm px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:bg-gray-100/70"
           >
             {TONE_DEFS.map((td) => (
               <option key={td.value} value={td.value}>
@@ -200,7 +200,7 @@ const CoverLetterPanel: React.FC<CoverLetterPanelProps> = ({ cvText, jdText, emb
       {ready && !letter && !loading && !error && (
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-3 animate-reveal">
           {/* Left: what you'll get */}
-          <div className="rounded-xl bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/60 border border-emerald-200/60 p-4">
+          <div className="rounded-xl bg-gradient-to-br from-emerald-50/60 via-white/70 to-teal-50/50 border border-emerald-200/50 p-4">
             <div className="flex items-center gap-2 mb-3">
               <HiSparkles className="h-4 w-4 text-emerald-600" />
               <h4 className="text-sm font-bold text-slate-800">{t('cl.you_get')}</h4>
@@ -216,7 +216,7 @@ const CoverLetterPanel: React.FC<CoverLetterPanelProps> = ({ cvText, jdText, emb
           </div>
 
           {/* Right: preview skeleton */}
-          <div className="rounded-xl border border-dashed border-emerald-300/70 bg-white/60 p-4 overflow-hidden relative">
+          <div className="rounded-xl border border-dashed border-emerald-300/70 bg-white/50 p-4 overflow-hidden relative">
             <div className="flex items-center gap-2 mb-3">
               <HiDocumentText className="h-4 w-4 text-emerald-600" />
               <h4 className="text-sm font-bold text-slate-800">{t('cl.preview')}</h4>
@@ -265,14 +265,14 @@ const CoverLetterPanel: React.FC<CoverLetterPanelProps> = ({ cvText, jdText, emb
           <textarea
             value={letter}
             onChange={(e) => setLetter(e.target.value)}
-            className="flex-1 min-h-[240px] w-full resize-none rounded-lg border border-emerald-100 bg-white/95 px-4 py-3 text-sm text-gray-800 leading-relaxed focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 whitespace-pre-wrap shadow-inner"
+            className="flex-1 min-h-[240px] w-full resize-none rounded-lg border border-emerald-100 bg-white/90 px-4 py-3 text-sm text-gray-800 leading-relaxed focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 whitespace-pre-wrap shadow-inner"
           />
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-white px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 active:scale-95 transition"
+              className="liquid-glass-button inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-emerald-700"
             >
               <HiOutlineClipboardDocumentList className="h-4 w-4" />
               {copied ? t('cl.copied') : t('cl.copy')}
@@ -281,7 +281,7 @@ const CoverLetterPanel: React.FC<CoverLetterPanelProps> = ({ cvText, jdText, emb
               type="button"
               onClick={handleDownloadDocx}
               disabled={downloading}
-              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-white px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-50 active:scale-95 transition"
+              className="liquid-glass-button inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-emerald-700 disabled:opacity-50"
             >
               {downloading ? (
                 <HiArrowPath className="h-4 w-4 animate-spin" />

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AnalysisResult, AISuggestion, StructuredJd, ImprovementLog, AnalysisSession } from '../types';
 import AnalysisPanel from './AnalysisPanel';
-import SubScoreBars from './SubScoreBars';
 import CVCoachPanel from './CVCoachPanel';
 import CoverLetterPanel from './CoverLetterPanel';
 import JDPreviewPanel from './JDPreviewPanel';
@@ -118,14 +117,14 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
               className="lg:col-span-1 flex flex-col gap-2 sm:gap-2.5 lg:gap-2 animate-soft-rise lg:min-h-0"
               style={{ animationDelay: '60ms' }}
             >
-              <div className="liquid-glass rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 xl:p-5">
+              <div className="liquid-glass rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 xl:p-5 lg:flex-1 lg:min-h-0 lg:overflow-hidden">
                 <AnalysisPanel
                   score={result.suitability_score}
                   previousScore={previousScore}
                   summary={result.summary}
+                  subScores={result.sub_scores}
                 />
               </div>
-              <SubScoreBars subScores={result.sub_scores} />
             </div>
 
             {/* Right: Tabbed tools */}
@@ -138,7 +137,7 @@ const Step3Analysis: React.FC<Step3AnalysisProps> = ({
                 <div
                   role="tablist"
                   aria-label="Analysis tools"
-                  className="shrink-0 flex items-center gap-1 px-2 pt-2 pb-0 border-b border-slate-200/70 bg-white/60 backdrop-blur-sm overflow-x-auto hide-scrollbar"
+                  className="shrink-0 flex items-center gap-1 px-2 pt-2 pb-0 border-b border-slate-200/60 bg-white/40 overflow-x-auto hide-scrollbar"
                 >
                   {TABS.map((tab) => {
                     const Icon = tab.icon;

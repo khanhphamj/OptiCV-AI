@@ -88,7 +88,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ score, onContinue, onDiscar
           <button
             type="button"
             onClick={onDiscard}
-            className="flex-1 min-h-[40px] inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white/70 px-3 text-sm font-semibold text-slate-700 hover:bg-white active:scale-95 transition"
+            className="liquid-glass-button flex-1 min-h-[40px] inline-flex items-center justify-center rounded-lg px-3 text-sm font-semibold text-slate-700"
           >
             {t('resume.discard')}
           </button>

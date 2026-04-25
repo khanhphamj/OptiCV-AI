@@ -4,14 +4,31 @@ import LottieAnimation from './LottieAnimation';
 import { HiSparkles, HiCheckCircle } from 'react-icons/hi2';
 import { useLang } from '../hooks/useLang';
 import type { TranslationKey } from '../i18n/translations';
+import ConstellationScan from './ConstellationScan';
 
-export type LoadingStage = 'validation' | 'analysis' | 'complete' | 'job_search' | 'job_matching';
+export type LoadingStage =
+  | 'collecting'
+  | 'validation'
+  | 'analysis'
+  | 'complete'
+  | 'job_search'
+  | 'job_matching';
 
 interface LoadingAnalysisProps {
   stage: LoadingStage;
   onCancel: () => void;
   onComplete: () => void;
+  /** Optional CV text — when present during 'analysis' stage, we render a
+   *  blurred preview with a scanner beam instead of the generic Lottie. */
+  cvText?: string;
 }
+
+const COLLECTING_KEYS: TranslationKey[] = [
+  'loading.collecting.1',
+  'loading.collecting.2',
+  'loading.collecting.3',
+  'loading.collecting.4',
+];
 
 const VALIDATION_KEYS: TranslationKey[] = [
   'loading.validation.1',
@@ -46,11 +63,12 @@ const JOB_MATCHING_KEYS: TranslationKey[] = [
   'loading.job_matching.4',
 ];
 
-const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onComplete }) => {
+const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onComplete, cvText }) => {
   const { t } = useLang();
 
   const steps = useMemo(() => {
     const keys =
+      stage === 'collecting' ? COLLECTING_KEYS :
       stage === 'validation' ? VALIDATION_KEYS :
       stage === 'job_search' ? JOB_SEARCH_KEYS :
       stage === 'job_matching' ? JOB_MATCHING_KEYS :
@@ -68,6 +86,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
 
   const title = isComplete
     ? t('loading.title.complete')
+    : stage === 'collecting'
+    ? t('loading.title.collecting')
     : stage === 'validation'
     ? t('loading.title.validation')
     : stage === 'job_search'
@@ -78,6 +98,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
 
   const subtitle = isComplete
     ? t('loading.subtitle.complete')
+    : stage === 'collecting'
+    ? t('loading.subtitle.collecting')
     : stage === 'validation'
     ? t('loading.subtitle.validation')
     : stage === 'job_search'
@@ -127,12 +149,16 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
         </h3>
         <p className="mt-1 text-sm text-slate-500 max-w-xs">{subtitle}</p>
 
-        <LottieAnimation
-          animationPath="/animations/analyzing.json"
-          className="w-44 h-44 sm:w-52 sm:h-52 mx-auto -my-4 sm:-my-6"
-          loop={true}
-          autoplay={true}
-        />
+        {stage === 'analysis' && cvText && cvText.trim().length > 50 ? (
+          <ConstellationScan cvText={cvText} />
+        ) : (
+          <LottieAnimation
+            animationPath="/animations/analyzing.json"
+            className="w-44 h-44 sm:w-52 sm:h-52 mx-auto -my-4 sm:-my-6"
+            loop={true}
+            autoplay={true}
+          />
+        )}
 
         {/* Step text */}
         <div className="min-h-[3rem] flex items-center justify-center px-2 w-full">
@@ -186,6 +212,43 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ stage, onCancel, onCo
           {t('loading.cancel')}
         </button>
       </div>
+    </div>
+  );
+};
+
+/**
+ * Blurred CV preview with a vertical scanner beam. Substitutes for the Lottie
+ * during the 'analysis' stage so the user sees their own document being "read".
+ */
+const CvScannerPreview: React.FC<{ cvText: string }> = ({ cvText }) => {
+  // Keep the snippet short — we're going for a visual hint, not readability.
+  const snippet = cvText.slice(0, 800);
+
+  return (
+    <div className="relative w-full max-w-[18rem] sm:max-w-[20rem] h-40 sm:h-44 mx-auto my-3 rounded-xl overflow-hidden border border-emerald-200/60 bg-white/80">
+      <pre
+        aria-hidden
+        className="absolute inset-0 p-3 text-[9px] leading-[1.35] font-mono text-slate-700/70 whitespace-pre-wrap break-words select-none"
+        style={{ filter: 'blur(2.2px) saturate(0.9)' }}
+      >
+        {snippet}
+      </pre>
+      <div className="scanner-beam" aria-hidden />
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white/90 to-transparent pointer-events-none"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-white/80 to-transparent pointer-events-none"
+      />
+      <span
+        aria-hidden
+        className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full bg-emerald-600/90 px-2 py-0.5 text-[9px] font-bold text-white tracking-wide shadow-sm"
+      >
+        <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
+        SCANNING
+      </span>
     </div>
   );
 };

@@ -45,7 +45,7 @@ const CoachProgressTracker: React.FC<CoachProgressTrackerProps> = ({ sessions, i
     <div className="border-b border-slate-200">
       <button
         onClick={onToggle}
-        className="w-full p-4 bg-slate-50 hover:bg-slate-100/70 transition-colors duration-200"
+        className="w-full p-4 bg-slate-50/50 hover:bg-slate-100/60 transition-colors duration-200"
         aria-expanded={isExpanded}
         aria-controls="improvement-history"
       >
@@ -65,7 +65,7 @@ const CoachProgressTracker: React.FC<CoachProgressTrackerProps> = ({ sessions, i
         className={`transition-all duration-500 ease-in-out grid ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
       >
         <div className="overflow-hidden">
-            <div className="p-4 space-y-4 bg-white max-h-64 overflow-y-auto hide-scrollbar">
+            <div className="p-4 space-y-4 bg-white/70 max-h-64 overflow-y-auto hide-scrollbar">
               {[...sessions].reverse().map((session, index, arr) => {
                   // Hide the last session (initial run) if it had no improvements.
                   if (index === arr.length - 1 && session.improvements.length === 0) {

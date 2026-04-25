@@ -4,24 +4,28 @@ import { Step, AnalysisResult, AISuggestion, ValidationResult, StructuredJd, Imp
 import { STEPS, FIND_JOBS_STEPS, JOB_MATCH_THRESHOLD } from './constants';
 import Header from './components/Header';
 import StepIndicator from './components/StepIndicator';
+import LandingPage from './components/LandingPage';
 import Step1UploadCV, { Step1Mode } from './components/Step1UploadCV';
 import Step2UploadJD from './components/Step2UploadJD';
 import Step2ReviewProfile from './components/Step2ReviewProfile';
 import Step3JobMatches from './components/Step3JobMatches';
 import Step3Analysis from './components/Step3Analysis';
 import { analyzeCv, validateDocuments, structureJd, parseCvProfile } from './services/openAIService';
-import { searchJobs, matchJobsToCv, buildSearchParams, fetchJdContent } from './services/jobSearchService';
+import { searchJobs, matchJobsToCv, buildSearchParams, fetchJdContent, importJdFromUrl } from './services/jobSearchService';
 import LoadingAnalysis from './components/LoadingAnalysis';
 import Footer from './components/Footer';
 import ResumeBanner from './components/ResumeBanner';
 import { HiExclamationTriangle, HiChevronLeft } from 'react-icons/hi2';
 import { trackEvent, trackPageView } from './utils/analytics';
+import { setFaviconState } from './utils/faviconAnimator';
+import { initGlassCursor } from './utils/glassCursor';
 import { usePersistedState, clearPersistedState } from './hooks/usePersistedState';
 import { useLang } from './hooks/useLang';
 
 export default function App() {
   const { t } = useLang();
   // Persisted state — survives refresh via localStorage.
+  const [hasStarted, setHasStarted] = usePersistedState<boolean>('hasStarted', false);
   const [currentStep, setCurrentStep] = usePersistedState<Step>('currentStep', Step.UploadCV);
   const [cvText, setCvText] = usePersistedState<string>('cvText', '');
   const [cvFileName, setCvFileName] = usePersistedState<string>('cvFileName', '');
@@ -42,7 +46,7 @@ export default function App() {
   );
 
   // Transient state — never persisted.
-  const [loadingStage, setLoadingStage] = useState<'validation' | 'analysis' | 'complete' | null>(null);
+  const [loadingStage, setLoadingStage] = useState<'collecting' | 'validation' | 'analysis' | 'complete' | null>(null);
   const [isParsingProfile, setIsParsingProfile] = useState(false);
   const [jobSearchStage, setJobSearchStage] = useState<'searching' | 'matching' | null>(null);
   const [jobSearchError, setJobSearchError] = useState<string | null>(null);
@@ -52,6 +56,9 @@ export default function App() {
 
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationClass, setAnimationClass] = useState('animate__animated animate__fadeIn');
+  // Live projected score — bumps every time the user applies a Coach
+  // suggestion. Reset on each re-analyze (the real score replaces the estimate).
+  const [pendingApplies, setPendingApplies] = useState(0);
 
   // Resume banner — shown once on mount if a completed analysis exists.
   const [showResumeBanner, setShowResumeBanner] = useState<boolean>(() => {
@@ -63,7 +70,25 @@ export default function App() {
     try {
       trackPageView();
     } catch {}
+    initGlassCursor();
   }, []);
+
+  // Favicon animation — mirrors analysis / job-search state.
+  useEffect(() => {
+    if (error || jobSearchError || profileError) {
+      setFaviconState('error');
+      return;
+    }
+    if (loadingStage === 'complete') {
+      setFaviconState('success');
+      return;
+    }
+    if (loadingStage || jobSearchStage || isParsingProfile) {
+      setFaviconState('loading');
+      return;
+    }
+    setFaviconState('idle');
+  }, [loadingStage, jobSearchStage, isParsingProfile, error, jobSearchError, profileError]);
 
   const changeStep = (
     targetStep: Step,
@@ -144,7 +169,15 @@ export default function App() {
     try {
       const params = buildSearchParams(profile, location);
       const search = await searchJobs(params);
-      setJobSearchMeta({ query: search.query, locationLabel: search.locationLabel });
+
+      // User-facing "query" display — composed from the profile fields, not the
+      // raw Tavily search string. The raw string is implementation detail.
+      const displayParts = [
+        profile.title || profile.role,
+        profile.level ? `${profile.level} level` : null,
+        search.locationLabel,
+      ].filter((p): p is string => !!p);
+      setJobSearchMeta({ query: displayParts.join(' · '), locationLabel: search.locationLabel });
 
       if (search.results.length === 0) {
         setJobSearchStage(null);
@@ -153,8 +186,10 @@ export default function App() {
       }
 
       setJobSearchStage('matching');
-      const topListings = search.results.slice(0, 10);
-      const matches = await matchJobsToCv(cvText, topListings);
+      // Match all listings returned by search — backend drops expired + off-location
+      // postings, so a wider input pool yields more active matches for the user.
+      const topListings = search.results.slice(0, 20);
+      const matches = await matchJobsToCv(cvText, topListings, location);
       setJobMatches(matches);
       try { trackEvent('job_search_completed', { count: matches.length }); } catch {}
     } catch (e) {
@@ -225,6 +260,50 @@ export default function App() {
     try { trackEvent('jd_uploaded', { fileName }); } catch {}
   };
 
+  /** URL flow: parent runs the collecting → validation → analysis pipeline so
+   *  the loading screen surfaces a "Collecting JD information" stage before
+   *  the usual validation/analysis stages. */
+  const handleJdUrlSubmit = (url: string) => {
+    setAnalysisSessions([]);
+    try { trackEvent('jd_url_submitted_app', { url }); } catch {}
+    startFullAnalysisFromUrl(cvText, url);
+  };
+
+  const startFullAnalysisFromUrl = useCallback(async (cv: string, url: string) => {
+    setError(null);
+    setValidationWarning(null);
+    changeStep(Step.Analysis);
+    setLoadingStage('collecting');
+
+    let imported: { url: string; content: string };
+    try {
+      const res = await importJdFromUrl(url);
+      if (!res.content || res.content.trim().length < 50) {
+        throw new Error('Imported JD is too short to analyze.');
+      }
+      imported = { url: res.url, content: res.content };
+    } catch (e) {
+      console.error(e);
+      const msg = e instanceof Error ? e.message : 'Could not import JD from URL.';
+      setError(`Failed to import JD: ${msg}`);
+      changeStep(Step.UploadJD);
+      setLoadingStage(null);
+      try { trackEvent('jd_url_import_failed'); } catch {}
+      return;
+    }
+
+    let host = 'website';
+    try { host = new URL(imported.url).hostname.replace(/^www\./, ''); } catch {}
+    setJdText(imported.content);
+    setJdFileName(`JD from ${host}`);
+    try { trackEvent('jd_url_imported', { host, length: imported.content.length }); } catch {}
+
+    // Continue with the standard pipeline (validation → analysis).
+    await startFullAnalysis(cv, imported.content);
+  // startFullAnalysis is stable (useCallback []), so omit it from deps.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const startFullAnalysis = useCallback(async (cv: string, jd: string) => {
     setError(null);
     setValidationWarning(null);
@@ -257,6 +336,7 @@ export default function App() {
     console.log('🚀 Starting analysis...', { cvLength: cv.length, jdLength: jd.length });
     setError(null);
     setValidationWarning(null);
+    setPendingApplies(0);
     // Ensure we are on the Analysis step, but don't animate if already there.
     if (currentStep !== Step.Analysis) {
         changeStep(Step.Analysis);
@@ -354,6 +434,7 @@ export default function App() {
   
   const handleApplySuggestion = useCallback((suggestion: AISuggestion) => {
     setCvText(prev => prev.replace(suggestion.original, suggestion.replacement));
+    setPendingApplies(p => p + 1);
   }, []);
 
   const handleAddImprovementLog = useCallback((log: Omit<ImprovementLog, 'id' | 'timestamp'>) => {
@@ -378,6 +459,17 @@ export default function App() {
 
 
   const renderContent = () => {
+    if (showLanding) {
+      return (
+        <LandingPage
+          onGetStarted={() => {
+            setHasStarted(true);
+            try { trackEvent('landing_get_started'); } catch {}
+          }}
+        />
+      );
+    }
+
     if (validationWarning) {
       const warnings: string[] = [];
       if (!validationWarning.is_cv_valid && validationWarning.cv_reason) {
@@ -387,7 +479,7 @@ export default function App() {
         warnings.push(`${t('validation.jd_prefix')} ${validationWarning.jd_reason}`);
       }
        return (
-        <div className="max-w-2xl mx-auto bg-amber-400/20 backdrop-blur-2xl p-6 sm:p-8 rounded-3xl shadow-2xl border border-amber-200/50 animate__animated animate__fadeInUp">
+        <div className="liquid-glass-tinted max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl ring-1 ring-amber-300/60 animate__animated animate__fadeInUp">
           <div className="text-center">
             <HiExclamationTriangle className="w-16 h-16 text-amber-500 mx-auto drop-shadow-lg" />
             <h2 className="mt-4 text-2xl font-bold text-gray-900">{t('validation.heading')}</h2>
@@ -405,7 +497,7 @@ export default function App() {
                 const resetValidation = () => setValidationWarning(null);
                 changeStep(Step.UploadJD, { onStepChange: resetValidation });
               }}
-              className="inline-flex items-center gap-2 rounded-lg bg-white/30 backdrop-blur-md px-6 py-3 text-base font-semibold text-amber-900 shadow-lg border border-white/50 hover:bg-white/50 transition-all"
+              className="liquid-glass-button inline-flex items-center gap-2 rounded-lg px-6 py-3 text-base font-semibold text-amber-900"
             >
               <HiChevronLeft className="h-4 w-4" />
               {t('validation.fix')}
@@ -422,14 +514,20 @@ export default function App() {
     }
 
     if (loadingStage && currentStep === Step.Analysis) {
-      return <LoadingAnalysis stage={loadingStage} onCancel={handleCancelAnalysis} onComplete={handleLoadingComplete} />;
+      return <LoadingAnalysis stage={loadingStage} onCancel={handleCancelAnalysis} onComplete={handleLoadingComplete} cvText={cvText} />;
     }
     
     switch (currentStep) {
       case Step.UploadCV:
         return <Step1UploadCV onUploadSuccess={handleCvUpload} />;
       case Step.UploadJD:
-        return <Step2UploadJD onUploadSuccess={handleJdUploadAndAnalyze} onBack={handleBack} cvFileName={cvFileName} />;
+        return (
+          <Step2UploadJD
+            onUploadSuccess={handleJdUploadAndAnalyze}
+            onSubmitUrl={handleJdUrlSubmit}
+            onBack={handleBack}
+          />
+        );
       case Step.ReviewProfile:
         return (
           <Step2ReviewProfile
@@ -481,9 +579,10 @@ export default function App() {
     ? analysisSessions[analysisSessions.length - 1].scoreAfter
     : analysisResult?.suitability_score ?? null;
 
-  // App is a single-viewport workspace on lg+ — no page scroll in any state,
-  // including loading and validation warning (their cards center in the main area).
-  const isFitScreen = true;
+  // Landing page shows only on a clean slate — no CV started, no analysis, no resume banner.
+  const showLanding = !hasStarted && currentStep === Step.UploadCV && cvText.length === 0 && !showResumeBanner;
+  // App is a single-viewport workspace on lg+ — landing is the exception so it can scroll.
+  const isFitScreen = !showLanding;
   const isStep3Dashboard =
     currentStep === Step.Analysis && !loadingStage && !validationWarning;
 
@@ -514,16 +613,33 @@ export default function App() {
 
       <div className="relative z-10 flex flex-col flex-grow lg:min-h-0">
       <Header
+        variant={showLanding ? 'colored' : 'glass'}
         status={
-          loadingStage
+          showLanding
+            ? undefined
+            : loadingStage === 'collecting'
+            ? t('loading.title.collecting')
+            : loadingStage === 'validation'
+            ? t('loading.title.validation')
+            : loadingStage
             ? t('loading.title.analysis')
             : isStep3Dashboard && analysisResult
             ? `${t('analysis.overall')}: ${analysisResult.suitability_score}/100`
             : t(`step.${currentStep}.name` as any)
         }
+        onHome={() => {
+          if (currentStep !== Step.UploadCV) {
+            setFlowMode('upload-jd');
+            changeStep(Step.UploadCV);
+            return;
+          }
+          if (cvText.length === 0) {
+            setHasStarted(false);
+          }
+        }}
       />
 
-      {!isStep3Dashboard && (
+      {!isStep3Dashboard && !showLanding && (
         <div
           id="step-indicator"
           className="relative z-20 animate__animated animate__fadeIn animate__fast"
@@ -544,7 +660,7 @@ export default function App() {
         }`}
       >
           {error && (
-            <div className="max-w-3xl mx-auto bg-red-100 backdrop-blur-lg border border-red-500/20 text-red-900 px-4 py-3 rounded-xl mb-6 text-sm text-center shadow-lg animate__animated animate__shakeX">
+            <div className="liquid-glass-tinted max-w-3xl mx-auto ring-1 ring-red-400/50 text-red-900 px-4 py-3 rounded-xl mb-6 text-sm text-center animate__animated animate__shakeX">
               <strong>Error:</strong> {error}
             </div>
           )}

@@ -35,6 +35,12 @@ declare module 'react-icons/hi2' {
   export const HiArrowTrendingUp: ComponentType<IconBaseProps>;
   export const HiArrowTrendingDown: ComponentType<IconBaseProps>;
   export const HiArrowLongRight: ComponentType<IconBaseProps>;
+  export const HiBolt: ComponentType<IconBaseProps>;
+  export const HiShieldCheck: ComponentType<IconBaseProps>;
+  export const HiClipboard: ComponentType<IconBaseProps>;
+  export const HiStop: ComponentType<IconBaseProps>;
+  export const HiLink: ComponentType<IconBaseProps>;
+  export const HiIdentification: ComponentType<IconBaseProps>;
 }
 
 declare module 'react-icons/fa' {

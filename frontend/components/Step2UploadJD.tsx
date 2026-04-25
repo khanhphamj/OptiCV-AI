@@ -8,6 +8,7 @@ import {
   HiDocumentArrowUp,
   HiLightBulb,
   HiArrowLongRight,
+  HiLink,
 } from 'react-icons/hi2';
 import FileStatusDisplay from './FileStatusDisplay';
 import LottieAnimation from './LottieAnimation';
@@ -17,15 +18,19 @@ import { useLang } from '../hooks/useLang';
 
 interface Step2UploadJDProps {
   onUploadSuccess: (text: string, fileName: string) => void;
+  /** Triggered when the user submits a URL — the parent runs the
+   *  collecting → validation → analysis pipeline so the loading screen
+   *  shows a "Collecting JD information" step. */
+  onSubmitUrl: (url: string) => void;
   onBack: () => void;
-  cvFileName: string;
 }
 
-const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, cvFileName }) => {
+const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onSubmitUrl, onBack }) => {
   const { t } = useLang();
-  const [activeTab, setActiveTab] = useState<'paste' | 'upload'>('paste');
+  const [activeTab, setActiveTab] = useState<'paste' | 'upload' | 'url'>('paste');
   const [pastedJd, setPastedJd] = useState('');
   const [fileData, setFileData] = useState<{ text: string; name: string; size: number } | null>(null);
+  const [urlInput, setUrlInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const handleFileParsed = (text: string, name: string, size: number) => {
@@ -38,6 +43,16 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
     setError(null);
   };
 
+  const parseHostname = (raw: string): string | null => {
+    try {
+      const u = new URL(raw);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+      return u.hostname.replace(/^www\./, '');
+    } catch {
+      return null;
+    }
+  };
+
   const handleAnalyze = () => {
     setError(null);
     if (activeTab === 'paste') {
@@ -46,13 +61,24 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
         return;
       }
       onUploadSuccess(pastedJd, 'Pasted Job Description');
-    } else if (fileData) {
+    } else if (activeTab === 'upload' && fileData) {
       onUploadSuccess(fileData.text, fileData.name);
+    } else if (activeTab === 'url') {
+      const trimmed = urlInput.trim();
+      const host = parseHostname(trimmed);
+      if (!host) {
+        setError(t('step2.url_invalid'));
+        return;
+      }
+      try { trackEvent('jd_url_submitted', { host }); } catch {}
+      onSubmitUrl(trimmed);
     }
   };
 
   const isAnalyzeDisabled =
-    (activeTab === 'paste' && pastedJd.trim().length < 50) || (activeTab === 'upload' && !fileData);
+    (activeTab === 'paste' && pastedJd.trim().length < 50) ||
+    (activeTab === 'upload' && !fileData) ||
+    (activeTab === 'url' && !urlInput.trim());
 
   const tips = [t('step2.hero.tip1'), t('step2.hero.tip2'), t('step2.hero.tip3'), t('step2.hero.tip4')];
 
@@ -82,7 +108,7 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
                   <HiCheck className="h-4 w-4 text-emerald-600" />
                 </div>
                 <p className="text-sm font-semibold text-gray-800 truncate">
-                  {t('step2.cv_label')}: <span className="font-normal">{cvFileName}</span>
+                  {t('step2.cv_label')}
                 </p>
               </div>
               <button
@@ -95,10 +121,10 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
           </div>
 
           {/* Tabs */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-lg">
+          <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100 rounded-lg">
             <button
               onClick={() => { setActiveTab('paste'); setError(null); }}
-              className={`flex items-center justify-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md transition-all ${
+              className={`flex items-center justify-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md transition-all ${
                 activeTab === 'paste' ? 'bg-white text-emerald-700 shadow' : 'text-gray-600 hover:bg-white/50'
               }`}
             >
@@ -107,12 +133,21 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
             </button>
             <button
               onClick={() => { setActiveTab('upload'); setError(null); }}
-              className={`flex items-center justify-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md transition-all ${
+              className={`flex items-center justify-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md transition-all ${
                 activeTab === 'upload' ? 'bg-white text-emerald-700 shadow' : 'text-gray-600 hover:bg-white/50'
               }`}
             >
               <HiDocumentArrowUp className="h-4 w-4" />
               {t('step2.tab_upload')}
+            </button>
+            <button
+              onClick={() => { setActiveTab('url'); setError(null); }}
+              className={`flex items-center justify-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md transition-all ${
+                activeTab === 'url' ? 'bg-white text-emerald-700 shadow' : 'text-gray-600 hover:bg-white/50'
+              }`}
+            >
+              <HiLink className="h-4 w-4" />
+              {t('step2.tab_url')}
             </button>
           </div>
 
@@ -137,14 +172,14 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
                       setError(null);
                       try { trackEvent('sample_jd_used'); } catch {}
                     }}
-                    className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-white/90 px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 active:scale-95 transition"
+                    className="liquid-glass-button absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-700"
                   >
                     <HiSparkles className="h-3.5 w-3.5" />
                     {t('step2.sample')}
                   </button>
                 )}
               </div>
-            ) : (
+            ) : activeTab === 'upload' ? (
               <div>
                 {!fileData ? (
                   <FileUpload
@@ -160,6 +195,23 @@ const Step2UploadJD: React.FC<Step2UploadJDProps> = ({ onUploadSuccess, onBack, 
                     fileSize={fileData.size}
                   />
                 )}
+              </div>
+            ) : (
+              <div className="h-full flex flex-col gap-3">
+                <div className="relative">
+                  <HiLink className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="url"
+                    inputMode="url"
+                    value={urlInput}
+                    onChange={(e) => { setUrlInput(e.target.value); setError(null); }}
+                    placeholder={t('step2.url_placeholder')}
+                    className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 text-slate-800 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors placeholder:text-slate-400"
+                  />
+                </div>
+                <p className="text-[11px] sm:text-xs text-slate-500 leading-snug">
+                  {t('step2.url_hint')}
+                </p>
               </div>
             )}
           </div>
